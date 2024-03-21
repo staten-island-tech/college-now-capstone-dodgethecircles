@@ -7,7 +7,7 @@ const { Schema } = mongoose;
 const code = mongoose.Types.ObjectId;
 
 const room = new Schema({
-  location: `/room/${code}`, // maybe references _id of the model id
+  location: String, // maybe references _id of the model id
   code: code.generate(),
   players: Number,
   host: String,

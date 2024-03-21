@@ -6,8 +6,6 @@ dotenv.config();
 
 export default async function connectToMongoDB() {
   const opts = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
     serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
     socketTimeoutMS: 45000, // Keep tryings for 45s
     family: 4, // Use IPv4, skip trying IPv6

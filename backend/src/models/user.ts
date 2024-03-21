@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 const { Schema } = mongoose;
 
 const user = new Schema({
-  Username: {
+  username: {
     type: String,
     required: true,
   },
-  Password: {
+  password: {
     type: String,
     required: true,
   },
@@ -16,7 +16,7 @@ const user = new Schema({
     {
       token: {
         type: String,
-        required: true,
+        required: false,
       },
     },
   ],

@@ -25,7 +25,7 @@ export const register = async function (req: Request, res: Response) {
     });
     const token = await generateToken(newUser);
     // save the user
-    /* newUser.save(function (err) {
+    newUser.save((err: any) => {
       if (err) {
         return res.json({ success: false, msg: "Username already exists." });
       }
@@ -35,7 +35,7 @@ export const register = async function (req: Request, res: Response) {
         newUser,
         token,
       });
-    }); */
+    }); 
     await newUser.save();
     res.json({
       success: true,
@@ -46,6 +46,20 @@ export const register = async function (req: Request, res: Response) {
   }
 };
 
+export const createUser = async (req: Request, res: Response) => {
+  //grab all users in the mopngodb
+
+  const user = new User(req.body);
+  try {
+    await user.save();
+    const token = await generateToken(user);
+    await User.create(user);
+    res.status(201).send({ user, token });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+}
+
 export const login = async (req: Request, res: Response) => {
   try {
     let username = req.body.username;
@@ -55,7 +69,7 @@ export const login = async (req: Request, res: Response) => {
     if (!user) {
       throw new Error("Unable to login");
     }
-
+    //@ts-ignore
     const isMatch = await bcrypt.compare(password, user.password);
     const token = await generateToken(user);
     if (!isMatch) {

@@ -23,7 +23,7 @@ app.use(
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// connectToMongoDB(); // provide mongoDB uri before uncommenting
+connectToMongoDB(); // provide mongoDB uri before uncommenting
 
 app.use("/", router);
 
