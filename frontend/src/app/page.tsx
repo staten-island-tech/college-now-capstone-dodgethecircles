@@ -1,112 +1,191 @@
-import Image from "next/image";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { CrownIcon } from "lucide-react";
+
+const players = [
+  { name: "Player1", highScore: 1000 },
+  { name: "Player2", highScore: 950 },
+  { name: "Player3", highScore: 900 },
+  { name: "Player4", highScore: 850 },
+  { name: "Player5", highScore: 800 },
+  { name: "Player6", highScore: 750 },
+  { name: "Player7", highScore: 700 },
+  { name: "Player8", highScore: 650 },
+  { name: "Player9", highScore: 600 },
+  { name: "Player10", highScore: 550 },
+];
+
+const tags = Array.from({ length: 50 }).map(
+  (_, i, a) => `v1.2.0-beta.${a.length - i}`
+);
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <main className="flex min-h-screen flex-row items-center justify-between p-24">
+      <div className="flex items-center justify-center h-auto w-auto bg-gradient-to-br from-black to-gray-600 p-10 rounded-lg gap-2">
+        {/* Leaderboard */}
+        <div className="bg-white rounded-lg p-3 max-h-[402px] ">
+          <h3 className="text-center bold">Leaderboard</h3>
+          {/* font and some typography stuff for this h3 ^ */}
+          <div className="grid w-full grid-cols-3 items-center text-center">
+            {/* fix this grid */}
+            <h4>Rank</h4>
+            <h4>Player</h4>
+            <h4>Score</h4>
+          </div>
+
+          <ScrollArea className="h-72 w-64 rounded-md border">
+            <div className="p-4">
+              {/* Top 3 */}
+              <div
+                id="1st"
+                className="flex flex-row content-baseline align items-center justify-evenly"
+              >
+                <div className="flex flex-col justify-center w-6">
+                  <CrownIcon color="gold" />
+                </div>
+                <Avatar>
+                  <AvatarImage src="https://i.pravatar.cc/300" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                <h4>{players[0].name}</h4>
+                <h4>{players[0].highScore}</h4>
+              </div>
+              <Separator className="my-1" />
+              <div
+                id="2nd"
+                className="flex flex-row content-baseline align items-center justify-evenly"
+              >
+                <div className="flex flex-col justify-center w-6">
+                  <CrownIcon color="silver" />
+                </div>
+                <Avatar>
+                  <AvatarImage src="https://i.pravatar.cc/300" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                <h4>{players[1].name}</h4>
+                <h4>{players[1].highScore}</h4>
+              </div>
+              <Separator className="my-1" />
+              <div
+                id="3rd"
+                className="flex flex-row content-baseline align items-center justify-evenly"
+              >
+                <div className="flex flex-col justify-center w-6">
+                  <CrownIcon color="brown" />
+                </div>
+                <Avatar>
+                  <AvatarImage src="https://i.pravatar.cc/300" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                <h4>{players[2].name}</h4>
+                <h4>{players[2].highScore}</h4>
+              </div>
+              {/*  */}
+              {/* Everyone Else */}
+              {players.slice(3).map((player, index) => (
+                <>
+                  <Separator className="my-1" />
+                  <div
+                    key={index}
+                    className="flex flex-row content-baseline align items-center justify-evenly text-center"
+                  >
+                    <div className="flex flex-col justify-center w-6">
+                      <h4>{index + 4}</h4>
+                    </div>
+
+                    <Avatar>
+                      <AvatarImage src="https://i.pravatar.cc/300" />
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                    <h2>{player.name}</h2>
+                    <p>{player.highScore}</p>
+                  </div>
+                </>
+              ))}
+            </div>
+          </ScrollArea>
         </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+        {/*  */}
+        <div className="bg-white rounded-lg p-3">
+          {/*  */}
+          <Tabs defaultValue="play" className="w-[300px]">
+            {/*  */}
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="play">Play</TabsTrigger>
+              <TabsTrigger value="profile">Profile</TabsTrigger>
+            </TabsList>
+            {/*  */}
+            <TabsContent value="play">
+              <Card>
+                <CardHeader>
+                  <CardTitle>CHOOSE A GAMEMODE</CardTitle>
+                  {/* need to choose a font for this it looks terrible */}
+                </CardHeader>
+                <CardContent className="flex justify-center flex-col">
+                  <Input
+                    type="name"
+                    placeholder="Enter A Name"
+                    className="mb-4"
+                  />
+                  <div className="grid w-full grid-cols-2 gap-1">
+                    <Button className="bg-slate-700">SinglePlayer</Button>
+                    <Button className="bg-slate-700">MultiPlayer</Button>
+                  </div>
+                </CardContent>
+                <Separator className="my-4" />
+                <CardFooter className="flex flex-col justify-center">
+                  <p className="text-[10px]">Want To Save Your High Scores?</p>
+                  <div className="flex ">
+                    {/* need to choose a font for these buttons looks terrible */}
+                    <Button variant="link" className="text-[12px]">
+                      Login
+                    </Button>
+                    <Separator orientation="vertical" />
+                    <Button variant="link" className="text-[12px]">
+                      Sign Up
+                    </Button>
+                  </div>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+            {/*  */}
+            <TabsContent value="profile">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex justify-center">AVATAR</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-center w-full">
+                    <Avatar className="w-24 h-24">
+                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                  </div>
+                  <div className="flex justify-center w-full mt-4  h-[120px] items-center rounded-md border-2 border-dashed text-sm">
+                    <h5 className="text-sm">Upload Profile Picture</h5>
+                    {/* change this font and add functionality */}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            {/*  */}
+          </Tabs>
+          {/*  */}
+        </div>
+        <div>join game room </div>
       </div>
     </main>
   );
