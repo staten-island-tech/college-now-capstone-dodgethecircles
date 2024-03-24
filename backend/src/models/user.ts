@@ -30,7 +30,7 @@ user.pre("save", async function (next) {
 
   next();
 });
-user.methods.comparePassword = function (passw, cb) {
+user.methods.comparePassword = function (passw: string, cb: any) {
   bcrypt.compare(passw, this.password, function (err, isMatch) {
     if (err) {
       return cb(err);
