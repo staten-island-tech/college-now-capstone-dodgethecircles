@@ -27,20 +27,6 @@ export const register = async function (req: Request, res: Response) {
     });
     const token = await generateToken(newUser);
     // save the user
-<<<<<<< HEAD
-    newUser.save((err: any) => {
-      if (err) {
-        return res.json({ success: false, msg: "Username already exists." });
-      }
-      res.json({
-        success: true,
-        msg: "Successful created new user.",
-        newUser,
-        token,
-      });
-    }); 
-=======
->>>>>>> ea8911e (creating ui for the homepage and some backend stuff?)
     await newUser.save();
     res.json({
       success: true,
@@ -50,24 +36,6 @@ export const register = async function (req: Request, res: Response) {
     });
   }
 };
-<<<<<<< HEAD
-
-export const createUser = async (req: Request, res: Response) => {
-  //grab all users in the mopngodb
-
-  const user = new User(req.body);
-  try {
-    await user.save();
-    const token = await generateToken(user);
-    await User.create(user);
-    res.status(201).send({ user, token });
-  } catch (error) {
-    res.status(400).send(error);
-  }
-}
-
-=======
->>>>>>> ea8911e (creating ui for the homepage and some backend stuff?)
 export const login = async (req: Request, res: Response) => {
   try {
     let username = req.body.username;
