@@ -1,3 +1,5 @@
+"use client";
+
 // Components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -19,7 +21,29 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
+// Form
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 // Icons
 import {
   CrownIcon,
@@ -27,6 +51,19 @@ import {
   UsersRoundIcon,
   TrophyIcon,
 } from "lucide-react";
+
+const formSchema = z.object({
+  username: z.string().min(5).max(50),
+  password: z.string().min(5).max(50),
+  confirmPassword: z.string().min(5).max(50),
+  email: z.string().email(),
+});
+
+const requiredFormSchema = formSchema.required({
+  username: true,
+  password: true,
+  confirmPassword: true,
+});
 
 const players = [
   { name: "Player1", highScore: 1000 },
@@ -59,6 +96,23 @@ const tags = Array.from({ length: 50 }).map(
 );
 
 export default function Home() {
+  // 1. Define your form.
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+      confirmPassword: "",
+      email: "",
+    },
+  });
+
+  // 2. Define a submit handler.
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values);
+  }
   return (
     <main className="flex min-h-screen flex-row items-center justify-between p-24 absolute top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4">
       <div className="flex items-center justify-center h-auto w-auto bg-gradient-to-br from-black to-gray-600 p-10 rounded-lg gap-2">
@@ -176,9 +230,38 @@ export default function Home() {
                   <p className="text-xs">Want To Save Your High Scores?</p>
                   <div className="flex ">
                     {/* need to choose a font for these buttons looks terrible */}
-                    <Button variant="link" className="text-xs">
-                      Login
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger>Login</DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Login</DialogTitle>
+                        </DialogHeader>
+                        <Form {...form}>
+                          <form
+                            onSubmit={form.handleSubmit(onSubmit)}
+                            className="space-y-8"
+                          >
+                            <FormField
+                              control={form.control}
+                              name="username"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Username</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="shadcn" {...field} />
+                                  </FormControl>
+                                  <FormDescription>
+                                    This is your public display name.
+                                  </FormDescription>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <Button type="submit">Submit</Button>
+                          </form>
+                        </Form>
+                      </DialogContent>
+                    </Dialog>
                     <Separator orientation="vertical" />
                     <Button variant="link" className="text-xs">
                       Sign Up
@@ -260,3 +343,6 @@ export default function Home() {
     </main>
   );
 }
+
+// login sign up store
+// user name
