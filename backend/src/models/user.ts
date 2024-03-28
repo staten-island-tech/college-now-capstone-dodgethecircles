@@ -22,6 +22,13 @@ const user = new Schema({
   ],
 });
 
+user.methods.returnData = function () {
+  return {
+    username: this.username,
+    tokens: this.tokens,
+  };
+};
+
 user.pre("save", async function (next) {
   const user = this;
   if (user.isModified("password")) {
@@ -30,7 +37,7 @@ user.pre("save", async function (next) {
 
   next();
 });
-user.methods.comparePassword = function (passw: string, cb: any) {
+user.methods.comparePassword = function (passw: string, cb: Function) {
   bcrypt.compare(passw, this.password, function (err, isMatch) {
     if (err) {
       return cb(err);
@@ -39,5 +46,4 @@ user.methods.comparePassword = function (passw: string, cb: any) {
   });
 };
 
-// export schema
 export default mongoose.model("User", user);
