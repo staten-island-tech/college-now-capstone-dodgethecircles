@@ -1,3 +1,5 @@
+"use client";
+
 // Components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -19,6 +21,38 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+// form
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
+const loginFormSchema = z.object({
+  username: z.string().min(2).max(50),
+  password: z.string().min(2).max(50),
+});
+const registerFormSchema = z.object({
+  username: z.string().min(2).max(50),
+  password: z.string().min(2).max(50),
+  confirmPassword: z.string().min(2).max(50),
+});
 
 // Icons
 import {
@@ -58,9 +92,37 @@ const tags = Array.from({ length: 50 }).map(
   (_, i, a) => `v1.2.0-beta.${a.length - i}`
 );
 
+// relative top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4"
+
 export default function Home() {
+  // 1. Define your form.
+  const loginForm = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
+  const registerForm = useForm<z.infer<typeof registerFormSchema>>({
+    resolver: zodResolver(registerFormSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  // 2. Define a submit handler.
+  function onSubmit(
+    values: z.infer<typeof loginFormSchema> | z.infer<typeof registerFormSchema>
+  ) {
+    // Perform form submission logic here
+    // Do something with the form values.
+    // ✅ This will be type-safe and validated.
+    console.log(values);
+  }
   return (
-    <main className="flex min-h-screen flex-row items-center justify-between p-24 absolute top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4">
+    <main className="flex min-h-screen flex-row items-center justify-center p-24">
       <div className="flex items-center justify-center h-auto w-auto bg-gradient-to-br from-black to-gray-600 p-10 rounded-lg gap-2">
         {/* Leaderboard */}
         <div className="bg-white rounded-lg p-3 h-80 w-64">
@@ -173,17 +235,126 @@ export default function Home() {
                 </CardContent>
                 <Separator className="my-1" />
                 <CardFooter className="flex flex-col justify-center p-1 mt-3">
-                  <p className="text-xs">Want To Save Your High Scores?</p>
-                  <div className="flex ">
-                    {/* need to choose a font for these buttons looks terrible */}
-                    <Button variant="link" className="text-xs">
-                      Login
-                    </Button>
-                    <Separator orientation="vertical" />
-                    <Button variant="link" className="text-xs">
-                      Sign Up
-                    </Button>
-                  </div>
+                  <p className="text-xs mb-1">Want To Save Your High Scores?</p>
+                  <Dialog>
+                    <DialogTrigger className="text-sm hover:text-purple-900 ">
+                      Login / Register
+                    </DialogTrigger>
+                    <DialogContent>
+                      <Tabs defaultValue="login" className="w-full mt-2">
+                        <TabsList className="grid w-full grid-cols-2 ">
+                          <TabsTrigger value="login">Login</TabsTrigger>
+                          <TabsTrigger value="register">Register</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="login">
+                          <Form {...loginForm}>
+                            <form
+                              onSubmit={loginForm.handleSubmit(onSubmit)}
+                              className="space-y-8"
+                            >
+                              <FormField
+                                control={loginForm.control}
+                                name="username"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Username *</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="shadcn" {...field} />
+                                    </FormControl>
+                                    <FormDescription>
+                                      This is your public display name.
+                                    </FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={loginForm.control}
+                                name="password"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Password *</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="shadcn" {...field} />
+                                    </FormControl>
+                                    <FormDescription>
+                                      Enter a secure password
+                                    </FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <p className="text-xs font-bold">
+                                * required fields
+                              </p>
+                              <Button type="submit">Submit</Button>
+                            </form>
+                          </Form>
+                        </TabsContent>
+                        <TabsContent value="register">
+                          <Form {...registerForm}>
+                            <form
+                              onSubmit={registerForm.handleSubmit(onSubmit)}
+                              className="space-y-8"
+                            >
+                              <FormField
+                                control={registerForm.control}
+                                name="username"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Username *</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="shadcn" {...field} />
+                                    </FormControl>
+                                    <FormDescription>
+                                      This is your public display name.
+                                    </FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={registerForm.control}
+                                name="password"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Password *</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="shadcn" {...field} />
+                                    </FormControl>
+                                    <FormDescription>
+                                      Enter a secure password
+                                    </FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={registerForm.control}
+                                name="confirmPassword"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Confirm Password *</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="shadcn" {...field} />
+                                    </FormControl>
+                                    <FormDescription>
+                                      Confirm your password
+                                    </FormDescription>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <p className="text-xs font-bold">
+                                * required fields
+                              </p>
+                              <Button type="submit">Submit</Button>
+                            </form>
+                          </Form>
+                        </TabsContent>
+                      </Tabs>
+                    </DialogContent>
+                  </Dialog>
                 </CardFooter>
               </Card>
             </TabsContent>
