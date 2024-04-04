@@ -1,4 +1,3 @@
-// create room using the room model
 import mongoose from "mongoose";
 import Room from "../models/room";
 
