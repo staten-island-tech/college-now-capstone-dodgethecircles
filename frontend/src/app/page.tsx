@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 
 // Components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -95,6 +96,22 @@ const tags = Array.from({ length: 50 }).map(
 // relative top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4"
 
 export default function Home() {
+  // state stuff
+  const [playerName, setPlayerName] = useState({
+    Name: "",
+  });
+
+  function handlePlayerNameChange(e: Event) {
+    setPlayerName({
+      ...playerName,
+      Name: e.target.value,
+    });
+    // console.log(playerName);
+  }
+
+  const [playerImage, setPlayerImage] = useState({
+    Image: "",
+  });
   // 1. Define your form.
   const loginForm = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -226,6 +243,8 @@ export default function Home() {
                   <Input
                     type="name"
                     placeholder="Enter A Name"
+                    value={playerName.Name}
+                    onChange={handlePlayerNameChange}
                     className="mb-4"
                   />
                   <div className="grid w-full grid-cols-2 gap-1">
@@ -275,7 +294,11 @@ export default function Home() {
                                   <FormItem>
                                     <FormLabel>Password *</FormLabel>
                                     <FormControl>
-                                      <Input placeholder="shadcn" {...field} />
+                                      <Input
+                                        type="password"
+                                        placeholder="shadcn"
+                                        {...field}
+                                      />
                                     </FormControl>
                                     <FormDescription>
                                       Enter a secure password
@@ -320,7 +343,11 @@ export default function Home() {
                                   <FormItem>
                                     <FormLabel>Password *</FormLabel>
                                     <FormControl>
-                                      <Input placeholder="shadcn" {...field} />
+                                      <Input
+                                        type="password"
+                                        placeholder="shadcn"
+                                        {...field}
+                                      />
                                     </FormControl>
                                     <FormDescription>
                                       Enter a secure password
@@ -336,7 +363,11 @@ export default function Home() {
                                   <FormItem>
                                     <FormLabel>Confirm Password *</FormLabel>
                                     <FormControl>
-                                      <Input placeholder="shadcn" {...field} />
+                                      <Input
+                                        type="password"
+                                        placeholder="shadcn"
+                                        {...field}
+                                      />
                                     </FormControl>
                                     <FormDescription>
                                       Confirm your password
@@ -363,13 +394,16 @@ export default function Home() {
               <Card className="h-full">
                 <CardContent>
                   <div className="flex justify-center w-full mt-4">
-                    <Avatar className="w-24 h-24">
-                      <AvatarImage src="https://github.com/shadcn.png" />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
+                    <button>
+                      <Avatar className="w-24 h-24">
+                        <AvatarImage src="https://github.com/shadcn.png" />
+                        <AvatarFallback>CN</AvatarFallback>
+                      </Avatar>
+                    </button>
                   </div>
                   <div className="flex justify-center w-full h-28 mt-3 items-center rounded-md border-2 border-dashed text-sm">
-                    <h5 className="text-sm">Upload Profile Picture</h5>
+                    <input name="fileInput" type="file" />
+                    {/* <h5 className="text-sm">Upload Profile Picture</h5> */}
                     {/* change this font and add functionality */}
                   </div>
                   <div className="flex justify-evenly w-full mt-4">
