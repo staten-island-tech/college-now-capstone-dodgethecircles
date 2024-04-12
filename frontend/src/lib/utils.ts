@@ -40,7 +40,7 @@ export function clearScreen(
   ctx: CanvasRenderingContext2D,
   canvas: HTMLCanvasElement
 ) {
-  ctx.fillStyle = "black";
+  ctx.fillStyle = "white";
   ctx.fillRect(0, 0, canvas.clientWidth, canvas.height);
 }
 

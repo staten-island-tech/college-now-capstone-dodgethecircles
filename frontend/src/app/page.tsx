@@ -43,7 +43,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useEffect, useRef } from "react";
+import { use, useEffect, useRef } from "react";
+import { Enemy, clearScreen, isNearEdge } from "@/lib/utils";
 
 const loginFormSchema = z.object({
   username: z.string().min(2).max(50),
@@ -62,6 +63,7 @@ import {
   UsersRoundIcon,
   TrophyIcon,
 } from "lucide-react";
+import { EnemyType } from "@/lib/interface";
 
 const players = [
   { name: "Player1", highScore: 1000 },
@@ -123,9 +125,44 @@ export default function Home() {
     // ✅ This will be type-safe and validated.
     console.log(values);
   }
+  let enemies:EnemyType[] = [];
+
+  useEffect(() => {
+    //@ts-ignore
+    let canvas: HTMLCanvasElement = document.getElementById("canvas");
+    //@ts-ignore
+    let ctx:CanvasRenderingContext2D = canvas.getContext("2d");
+    drawGame();
+    function getEnemies() {
+      enemies.push(new Enemy(1, canvasRef.current.clientWidth, canvas.clientHeight));
+      enemies = enemies.sort((a, b) => b.radius - a.radius);
+    }
+    setInterval(getEnemies, canvas.width / 10);
+    
+    function drawGame() {
+      clearScreen(ctx, canvas);
+    
+      enemyUpdate();
+    
+      requestAnimationFrame(drawGame);
+      
+    }
+    
+    function enemyUpdate() {
+      enemies = enemies.filter((enemy: Enemy) =>
+        isNearEdge(enemy.x, enemy.y, canvas.clientWidth, canvas.clientHeight)
+      );
+      enemies.forEach((enemy: Enemy) => {
+        enemy.draw(ctx);
+        enemy.update();
+      });
+    }
+  }, []);
+  
+
   return (
     <main className="flex min-h-screen flex-row items-center justify-center p-24">
-    <canvas id="canvas" ref={canvasRef} className="absolute" width={screen.width} height={screen.height}></canvas>
+    <canvas id="canvas" ref={canvasRef} className="absolute" width={window.innerWidth} height={window.innerHeight -17}></canvas>
       <div className="flex items-center justify-center h-auto w-auto bg-gradient-to-br from-black to-gray-600 p-10 rounded-lg gap-2 relative">
         {/* Leaderboard */}
         <div className="bg-white rounded-lg p-3 h-80 w-64">
