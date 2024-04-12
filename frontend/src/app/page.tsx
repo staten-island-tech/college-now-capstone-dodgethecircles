@@ -43,6 +43,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useEffect, useRef } from "react";
 
 const loginFormSchema = z.object({
   username: z.string().min(2).max(50),
@@ -95,6 +96,7 @@ const tags = Array.from({ length: 50 }).map(
 // relative top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4"
 
 export default function Home() {
+  const canvasRef = useRef(null);
   // 1. Define your form.
   const loginForm = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -123,7 +125,8 @@ export default function Home() {
   }
   return (
     <main className="flex min-h-screen flex-row items-center justify-center p-24">
-      <div className="flex items-center justify-center h-auto w-auto bg-gradient-to-br from-black to-gray-600 p-10 rounded-lg gap-2">
+    <canvas id="canvas" ref={canvasRef} className="absolute" width={screen.width} height={screen.height}></canvas>
+      <div className="flex items-center justify-center h-auto w-auto bg-gradient-to-br from-black to-gray-600 p-10 rounded-lg gap-2 relative">
         {/* Leaderboard */}
         <div className="bg-white rounded-lg p-3 h-80 w-64">
           <h3 className="text-center bold underline">Leaderboard</h3>

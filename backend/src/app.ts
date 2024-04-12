@@ -4,10 +4,12 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import { router } from "./routes";
 import connectToMongoDB from "./db/mongoDB";
+import expressWs from "express-ws";
 
 dotenv.config();
 const port = process.env.PORT || 3000;
 const app = express();
+expressWs(app);
 
 app.use(cors());
 
@@ -31,4 +33,4 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
-export { app };dodgethecircles/backend/srcdodgethecircles/backend/src
+export { app };

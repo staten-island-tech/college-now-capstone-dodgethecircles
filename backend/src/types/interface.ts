@@ -14,3 +14,8 @@ export interface MulterReq extends Request {
     path: any;
   };
 }
+
+export interface ReturnData {
+  username: string;
+  tokens: { token: string }[];
+}

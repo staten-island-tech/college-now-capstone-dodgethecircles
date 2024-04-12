@@ -71,11 +71,11 @@ export const login = async (req: Request, res: Response) => {
     if (!isMatch) {
       throw new Error("Unable to login");
     }
-    
+
     const token = await generateToken(user);
-    res
-      .status(200)
-      .send({ success: true, user.returnData, token });
+    //@ts-ignore
+    user.password = undefined;
+    res.status(200).send({ success: true, user });
   } catch (error) {
     console.log(error);
     res.status(400).send("user not found");

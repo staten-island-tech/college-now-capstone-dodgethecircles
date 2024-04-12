@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "express-ws": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/express-ws": "^3.0.4"
+  }
+}

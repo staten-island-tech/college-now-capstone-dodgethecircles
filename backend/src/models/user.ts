@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import { ReturnData } from "../types/interface";
 
 const { Schema } = mongoose;
 
@@ -21,13 +22,6 @@ const user = new Schema({
     },
   ],
 });
-
-user.methods.returnData = function () {
-  return {
-    username: this.username,
-    tokens: this.tokens,
-  };
-};
 
 user.pre("save", async function (next) {
   const user = this;
