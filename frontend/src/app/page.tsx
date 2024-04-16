@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/dialog";
 
 // form
-import { z } from "zod";
+import { set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -43,7 +43,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { use, useEffect, useRef } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { Enemy, clearScreen, isNearEdge } from "@/lib/utils";
 
 const loginFormSchema = z.object({
@@ -98,7 +98,21 @@ const tags = Array.from({ length: 50 }).map(
 // relative top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4"
 
 export default function Home() {
-  const canvasRef = useRef(null);
+
+  const [windowWidth, setWindowWidth] = useState(1920);
+  const [windowHeight, setWindowHeight] = useState(1080);
+  console.log(windowWidth)
+
+    useEffect(() => {
+      const handleResize = () => {
+        setWindowWidth(window.innerWidth);
+        setWindowHeight(window.innerHeight);
+      };
+
+      handleResize();
+
+      window.addEventListener("resize", handleResize);
+    }, []);
   // 1. Define your form.
   const loginForm = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -128,20 +142,26 @@ export default function Home() {
   let enemies:EnemyType[] = [];
 
   useEffect(() => {
-    //@ts-ignore
-    let canvas: HTMLCanvasElement = document.getElementById("canvas");
-    //@ts-ignore
-    let ctx:CanvasRenderingContext2D = canvas.getContext("2d");
+    let canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement;
+    let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
+    let view:boolean = true;
     drawGame();
     function getEnemies() {
-      enemies.push(new Enemy(1, canvasRef.current.clientWidth, canvas.clientHeight));
+      enemies.push(new Enemy(10, windowWidth, windowHeight));
       enemies = enemies.sort((a, b) => b.radius - a.radius);
     }
     setInterval(getEnemies, canvas.width / 10);
-    
+    document.addEventListener("visibilitychange", () => {
+      console.log(document.visibilityState)
+      if (document.visibilityState == "visible") {
+        view = true;
+      } else {
+        view = false;
+      }
+    });
     function drawGame() {
+      if (!view) return;
       clearScreen(ctx, canvas);
-    
       enemyUpdate();
     
       requestAnimationFrame(drawGame);
@@ -150,19 +170,19 @@ export default function Home() {
     
     function enemyUpdate() {
       enemies = enemies.filter((enemy: Enemy) =>
-        isNearEdge(enemy.x, enemy.y, canvas.clientWidth, canvas.clientHeight)
+        isNearEdge(enemy.x, enemy.y, windowWidth, windowHeight)
       );
       enemies.forEach((enemy: Enemy) => {
         enemy.draw(ctx);
         enemy.update();
       });
     }
-  }, []);
+  }, [windowHeight,windowWidth]);
   
 
   return (
     <main className="flex min-h-screen flex-row items-center justify-center p-24">
-    <canvas id="canvas" ref={canvasRef} className="absolute" width={window.innerWidth} height={window.innerHeight -17}></canvas>
+    <canvas id="canvas" className="absolute" width={windowWidth} height={windowHeight}></canvas>
       <div className="flex items-center justify-center h-auto w-auto bg-gradient-to-br from-black to-gray-600 p-10 rounded-lg gap-2 relative">
         {/* Leaderboard */}
         <div className="bg-white rounded-lg p-3 h-80 w-64">

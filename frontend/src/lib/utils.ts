@@ -72,7 +72,7 @@ export function genText(
   ctx.fillText(`${text}`, x, y);
 }
 
-export function isClickOnCanvas(event, canvas: HTMLCanvasElement) {
+export function isClickOnCanvas(event: MouseEvent, canvas: HTMLCanvasElement) {
   let x = event.clientX;
   let y = event.clientY;
   let canvasRect = canvas.getBoundingClientRect();
@@ -157,7 +157,7 @@ export class Enemy implements EnemyType {
       case 1:
         this.x = -this.radius;
         this.y = getRandom(0, height);
-        this.speedX = getRandom(0.5, 3);
+        this.speedX = (Math.random() * width) / 200;
         this.speedY = getRandom(-3, 3);
         break;
       case 2:

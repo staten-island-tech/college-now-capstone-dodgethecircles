@@ -1,34 +1,12 @@
 import { WhiteBlobType, ArrowsType } from "./interface";
 
-export function keyDown(i, arrows: ArrowsType): ArrowsType {
-  if (i.keyCode == "40") {
-    arrows.downPressed = true;
-  }
-  if (i.keyCode == "38") {
-    arrows.upPressed = true;
-  }
-  if (i.keyCode == "37") {
-    arrows.leftPressed = true;
-  }
-  if (i.keyCode == "39") {
-    arrows.rightPressed = true;
-  }
+export function keyDown(i: KeyboardEvent, arrows: ArrowsType): ArrowsType {
+  arrows[i.key as keyof ArrowsType] = false;
   return arrows;
 }
 
-export function keyUp(i, arrows: ArrowsType): ArrowsType {
-  if (i.keyCode == "40") {
-    arrows.downPressed = false;
-  }
-  if (i.keyCode == "38") {
-    arrows.upPressed = false;
-  }
-  if (i.keyCode == "37") {
-    arrows.leftPressed = false;
-  }
-  if (i.keyCode == "39") {
-    arrows.rightPressed = false;
-  }
+export function keyUp(i: KeyboardEvent, arrows: ArrowsType): ArrowsType {
+  arrows[i.key as keyof ArrowsType] = false;
   return arrows;
 }
 
@@ -36,16 +14,16 @@ export function inputs(
   whiteBlob: WhiteBlobType,
   arrows: ArrowsType
 ): WhiteBlobType {
-  if (arrows.downPressed) {
+  if (arrows.ArrowDown) {
     whiteBlob.y += whiteBlob.speed;
   }
-  if (arrows.upPressed) {
+  if (arrows.ArrowUp) {
     whiteBlob.y -= whiteBlob.speed;
   }
-  if (arrows.leftPressed) {
+  if (arrows.ArrowLeft) {
     whiteBlob.x -= whiteBlob.speed;
   }
-  if (arrows.rightPressed) {
+  if (arrows.ArrowRight) {
     whiteBlob.x += whiteBlob.speed;
   }
   return whiteBlob;

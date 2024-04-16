@@ -20,8 +20,8 @@ export type WhiteBlobType = {
 };
 
 export type ArrowsType = {
-  upPressed: boolean;
-  downPressed: boolean;
-  leftPressed: boolean;
-  rightPressed: boolean;
+  ArrowUp: boolean;
+  ArrowDown: boolean;
+  ArrowLeft: boolean;
+  ArrowRight: boolean;
 };
