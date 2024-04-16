@@ -157,26 +157,30 @@ export class Enemy implements EnemyType {
       case 1:
         this.x = -this.radius;
         this.y = getRandom(0, height);
-        this.speedX = (Math.random() * width) / 200;
-        this.speedY = getRandom(-3, 3);
+        this.speedX = (Math.random() * width) / 200 + 0.1;
+        this.speedY =
+          (-1) ** getRandom(1, 2) * ((Math.random() * height) / 200 + 0.1);
         break;
       case 2:
-        this.y = -this.radius;
         this.x = getRandom(0, width);
-        this.speedX = getRandom(-3, 3);
-        this.speedY = getRandom(0.5, 3);
+        this.y = -this.radius;
+        this.speedX =
+          (-1) ** getRandom(1, 2) * ((Math.random() * width) / 200 + 0.1);
+        this.speedY = (Math.random() * height) / 200 + 0.1;
         break;
       case 3:
-        this.y = getRandom(0, height);
         this.x = width + this.radius;
-        this.speedX = getRandom(-3, -0.5);
-        this.speedY = getRandom(-3, 3);
+        this.y = getRandom(0, height);
+        this.speedX = -((Math.random() * width) / 200 + 0.1);
+        this.speedY =
+          (-1) ** getRandom(1, 2) * ((Math.random() * height) / 200 + 0.1);
         break;
       case 4:
-        this.y = height + this.radius;
         this.x = getRandom(0, width);
-        this.speedX = getRandom(-3, 3);
-        this.speedY = getRandom(-3, -0.5);
+        this.y = height + this.radius;
+        this.speedX =
+          (-1) ** getRandom(1, 2) * ((Math.random() * width) / 200 + 0.1);
+        this.speedY = -((Math.random() * height) / 200 + 0.1);
     }
   }
 

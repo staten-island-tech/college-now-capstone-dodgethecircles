@@ -163,7 +163,7 @@ export default function Home() {
       if (!view) return;
       clearScreen(ctx, canvas);
       enemyUpdate();
-    
+      
       requestAnimationFrame(drawGame);
       
     }
