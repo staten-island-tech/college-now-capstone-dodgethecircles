@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import { checkAuth } from "../controllers/middleware";
 import expressWs from "express-ws";
+import { wsConnect } from "../controllers/ws";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -37,27 +38,5 @@ router.post("/upload", upload.single("file"), (req, res, next) =>
   createFile(req as MulterReq, res, next)
 );
 
-router.ws("/ws", (ws, req) => {
-  console.log("connected");
-  ws.on("message", (msg) => {
-    //@ts-ignore
-    let data = JSON.parse(msg);
-    switch (data.type) {
-      case "message":
-        ws.send(msg);
-        break;
-      case "join":
-        ws.send(msg);
-        break;
-      case "temp":
-        ws.send(msg);
-        console.log("hi");
-        break;
-      default:
-        ws.send(msg);
-        break;
-    }
-    ws.send(msg);
-  });
-});
+router.ws("/ws", (ws, req) => wsConnect(ws, req));
 export { router };

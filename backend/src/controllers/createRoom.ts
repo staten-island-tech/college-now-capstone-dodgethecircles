@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import Room from "../models/room";
 
 export const createRoom = async (req: any, res: any) => {

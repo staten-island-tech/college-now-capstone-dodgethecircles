@@ -8,7 +8,7 @@ const room = new Schema({
   code: code.generate(),
   players: Number,
   host: String,
-  otherPlayers: String, // don't know if this is the right type
+  otherPlayers: [], // don't know if this is the right type
   messageType: String,
 });
 
