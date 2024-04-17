@@ -145,28 +145,36 @@ export default function Home() {
     let canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement;
     let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
     let view:boolean = true;
-    drawGame();
+    let lastFrameTime = 0;
+    const frameDuration = 1000 / 60;
     function getEnemies() {
       enemies.push(new Enemy(10, windowWidth, windowHeight));
       enemies = enemies.sort((a, b) => b.radius - a.radius);
     }
     setInterval(getEnemies, canvas.width / 10);
     document.addEventListener("visibilitychange", () => {
-      console.log(document.visibilityState)
       if (document.visibilityState == "visible") {
         view = true;
       } else {
         view = false;
       }
     });
-    function drawGame() {
-      if (!view) return;
-      clearScreen(ctx, canvas);
-      enemyUpdate();
-      
+    function drawGame(timestamp: number) {
+      // if (!view) return;
       requestAnimationFrame(drawGame);
+
+  // Calculate the time difference between the current frame and the last frame
+      const deltaTime = timestamp - lastFrameTime;
+
+      // If enough time has passed, update the animation and reset lastFrameTime
+      if (deltaTime >= frameDuration) {
+        clearScreen(ctx, canvas);
+        enemyUpdate();
+        lastFrameTime = timestamp;
+      }
       
     }
+    requestAnimationFrame(drawGame)
     
     function enemyUpdate() {
       enemies = enemies.filter((enemy: Enemy) =>
