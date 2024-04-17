@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-import { ReturnData } from "../types/interface";
 
 const { Schema } = mongoose;
 
@@ -21,6 +20,10 @@ const user = new Schema({
       },
     },
   ],
+  highscore: {
+    type: Number,
+    default: 0,
+  },
 });
 
 user.pre("save", async function (next) {

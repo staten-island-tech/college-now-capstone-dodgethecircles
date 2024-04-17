@@ -18,21 +18,18 @@ export const register = async (req: Request, res: Response) => {
     !req.body.username ||
     !req.body.password
   ) {
-    res.json({
-      success: false,
+    res.status(400).json({
       msg: "Please pass only username and password.",
     });
     return;
   } else if (req.body.username.length < 6) {
-    res.json({
-      success: false,
+    res.status(400).json({
       msg: "Username must be at least 6 characters.",
     });
     return;
-  } else if (req.body.password.length < 6) {
-    res.json({
-      success: false,
-      msg: "Password must be at least 6 characters.",
+  } else if (req.body.password.length < 8) {
+    res.status(400).json({
+      msg: "Password must be at least 8 characters.",
     });
     return;
   }
@@ -41,7 +38,7 @@ export const register = async (req: Request, res: Response) => {
     username: req.body.username,
   });
   if (exists) {
-    res.json({ success: false, msg: "Username already exists." });
+    res.status(401).json({ msg: "Username already exists." });
     return;
   }
 
@@ -72,7 +69,7 @@ export const login = async (req: Request, res: Response) => {
       throw new Error("Unable to login");
     }
 
-    const token = await generateToken(user);
+    await generateToken(user);
     //@ts-ignore
     user.password = undefined;
     res.status(200).send({ success: true, user });
