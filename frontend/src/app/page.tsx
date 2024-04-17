@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/form";
 import { use, useEffect, useRef, useState } from "react";
 import { Enemy, clearScreen, isNearEdge } from "@/lib/utils";
+import Leaderboard from "@/app/leaderboardPage/page"
 
 const loginFormSchema = z.object({
   username: z.string().min(2).max(50),
@@ -139,7 +140,6 @@ export default function Home() {
     // ✅ This will be type-safe and validated.
     console.log(values);
   }
-  let enemies:EnemyType[] = [];
 
   useEffect(() => {
     let canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement;
@@ -147,9 +147,10 @@ export default function Home() {
     let view:boolean = true;
     let lastFrameTime = 0;
     const frameDuration = 1000 / 60;
+    let enemies:EnemyType[] = [];
     function getEnemies() {
       enemies.push(new Enemy(10, windowWidth, windowHeight));
-      enemies = enemies.sort((a, b) => b.radius - a.radius);
+      // enemies = enemies.sort((a, b) => b.radius - a.radius);
     }
     setInterval(getEnemies, canvas.width / 10);
     document.addEventListener("visibilitychange", () => {
@@ -160,14 +161,11 @@ export default function Home() {
       }
     });
     function drawGame(timestamp: number) {
-      // if (!view) return;
       requestAnimationFrame(drawGame);
-
-  // Calculate the time difference between the current frame and the last frame
       const deltaTime = timestamp - lastFrameTime;
 
-      // If enough time has passed, update the animation and reset lastFrameTime
       if (deltaTime >= frameDuration) {
+        if (!view) return;
         clearScreen(ctx, canvas);
         enemyUpdate();
         lastFrameTime = timestamp;
@@ -192,89 +190,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-row items-center justify-center p-24">
     <canvas id="canvas" className="absolute" width={windowWidth} height={windowHeight}></canvas>
       <div className="flex items-center justify-center h-auto w-auto bg-gradient-to-br from-black to-gray-600 p-10 rounded-lg gap-2 relative">
-        {/* Leaderboard */}
-        <div className="bg-white rounded-lg p-3 h-80 w-64">
-          <h3 className="text-center bold underline">Leaderboard</h3>
-          {/* font and some typography stuff for this h3 ^ */}
-          <div className="grid w-full grid-cols-3 items-center text-center">
-            {/* fix this grid */}
-            <h4>Rank</h4>
-            <h4>Player</h4>
-            <h4>Score</h4>
-          </div>
-          <ScrollArea className="rounded-lg border h-5/6 w-full">
-            <div className="p-4">
-              {/* Top 3 */}
-              <div
-                id="1st"
-                className="flex flex-row content-baseline align items-center justify-evenly"
-              >
-                <div className="flex flex-col justify-center w-6">
-                  <CrownIcon color="gold" />
-                </div>
-                <Avatar>
-                  <AvatarImage src="https://i.pravatar.cc/300" />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <h4>{players[0].name}</h4>
-                <h4>{players[0].highScore}</h4>
-              </div>
-              <Separator className="my-1" />
-              <div
-                id="2nd"
-                className="flex flex-row content-baseline align items-center justify-evenly"
-              >
-                <div className="flex flex-col justify-center w-6">
-                  <CrownIcon color="silver" />
-                </div>
-                <Avatar>
-                  <AvatarImage src="https://i.pravatar.cc/300" />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <h4>{players[1].name}</h4>
-                <h4>{players[1].highScore}</h4>
-              </div>
-              <Separator className="my-1" />
-              <div
-                id="3rd"
-                className="flex flex-row content-baseline align items-center justify-evenly"
-              >
-                <div className="flex flex-col justify-center w-6">
-                  <CrownIcon color="brown" />
-                </div>
-                <Avatar>
-                  <AvatarImage src="https://i.pravatar.cc/300" />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <h4>{players[2].name}</h4>
-                <h4>{players[2].highScore}</h4>
-              </div>
-              {/*  */}
-              {/* Everyone Else */}
-              {players.slice(3).map((player, index) => (
-                <>
-                  <Separator className="my-1" />
-                  <div
-                    key={player.name}
-                    className="flex flex-row content-baseline align items-center justify-evenly text-center"
-                  >
-                    <div className="flex flex-col justify-center w-6">
-                      <h4>{index + 4}</h4>
-                    </div>
-
-                    <Avatar>
-                      <AvatarImage src="https://i.pravatar.cc/300" />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                    <h2>{player.name}</h2>
-                    <p>{player.highScore}</p>
-                  </div>
-                </>
-              ))}
-            </div>
-          </ScrollArea>
-        </div>
-        {/*  */}
+        <Leaderboard/>
         <div className="bg-white rounded-lg p-3 w-80 h-96">
           {/*  */}
           <Tabs defaultValue="play" className="w-full">
