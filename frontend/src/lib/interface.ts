@@ -25,3 +25,9 @@ export type ArrowsType = {
   ArrowLeft: boolean;
   ArrowRight: boolean;
 };
+
+export type PlayerType = {
+  username: string;
+  highscore: number;
+  profilePicture: ImageBitmap | undefined;
+};

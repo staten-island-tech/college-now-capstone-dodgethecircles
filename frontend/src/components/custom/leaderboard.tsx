@@ -1,25 +1,13 @@
 import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CrownIcon } from "lucide-react";
-import { Separator } from "../ui/separator";
-import { ScrollArea } from "../ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useState } from "react";
-
+import { PlayerType } from "@/lib/interface";
 
 export default function Leaderboard() {
-
-  const [players, setPlayers] = useState([
-        { username: "Player10", highscore: 1000 },
-        { username: "Player9", highscore: 950 },
-        { username: "Player8", highscore: 900 },
-        { username: "Player7", highscore: 850 },
-        { username: "Player6", highscore: 800 },
-        { username: "Player5", highscore: 750 },
-        { username: "Player4", highscore: 700 },
-        { username: "Player3", highscore: 650 },
-        { username: "Player2", highscore: 600 },
-        { username: "Player1", highscore: 550 },
-      ]);
+  const [players, setPlayers] =  useState<PlayerType[]>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -57,7 +45,7 @@ export default function Leaderboard() {
               <CrownIcon color="gold" />
             </div>
             <Avatar>
-              <AvatarImage src="https://i.pravatar.cc/300" />
+              <AvatarImage src={players[2].profilePicture || "@/public/default_pfp.svg"} />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <h4>{players[0].username}</h4>
@@ -77,7 +65,7 @@ export default function Leaderboard() {
                 <CrownIcon color="silver" />
               </div>
               <Avatar>
-                <AvatarImage src="https://i.pravatar.cc/300" />
+                <AvatarImage src={players[2].profilePicture || "@/public/default_pfp.svg"} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
               <h4>{players[1].username}</h4>
@@ -98,7 +86,7 @@ export default function Leaderboard() {
                 <CrownIcon color="brown" />
               </div>
               <Avatar>
-                <AvatarImage src="https://i.pravatar.cc/300" />
+                <AvatarImage src={players[2].profilePicture || "@/public/default_pfp.svg"}  />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
               <h4>{players[2].username}</h4>
