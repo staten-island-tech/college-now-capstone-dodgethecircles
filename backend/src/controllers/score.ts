@@ -7,7 +7,7 @@ export const getLeaderboard = async (req: Request, res: Response) => {
       .sort({ score: -1 })
       .limit(10)
       .select("username highscore -_id");
-    res.json(users);
+    res.status(200).json(users);
   } catch (err: any) {
     res.status(500).json({ message: err.message });
   }

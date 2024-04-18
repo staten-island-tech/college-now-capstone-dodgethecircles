@@ -45,7 +45,7 @@ import {
 } from "@/components/ui/form";
 import { use, useEffect, useRef, useState } from "react";
 import { Enemy, clearScreen, isNearEdge } from "@/lib/utils";
-import Leaderboard from "@/app/leaderboardPage/page"
+import Leaderboard from "@/components/custom/page"
 
 const loginFormSchema = z.object({
   username: z.string().min(2).max(50),
