@@ -21,6 +21,11 @@ const user = new Schema(
       type: Number,
       default: 0,
     },
+    pfp: {
+      type: Buffer,
+      contentType: String,
+      default: "default_pfp.svg",
+    },
   },
   {
     toJSON: {

@@ -29,5 +29,5 @@ export type ArrowsType = {
 export type PlayerType = {
   username: string;
   highscore: number;
-  profilePicture: ImageBitmap | undefined;
+  profilePicture: ImageBitmap;
 };
