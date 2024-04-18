@@ -45,36 +45,37 @@ export const register = async (req: Request, res: Response) => {
   const user = new User(req.body);
   try {
     await user.save();
-    const token = await generateToken(user);
-    res
-      .status(201)
-      .send({ success: true, user: { ...user, password: undefined }, token });
+    await generateToken(user).then((token: String) => {
+      user.tokens.push(token);
+      user.save();
+
+      res.status(201).send({ user });
+    });
   } catch (error) {
-    res.status(400).send(error);
+    if (error instanceof Error) res.status(400).send({ msg: error.message });
+    else {
+      console.log(error);
+      res.status(400).send({ msg: "An error occurred." });
+    }
   }
 };
 
 export const login = async (req: Request, res: Response) => {
   try {
-    let username = req.body.username;
-    let password = req.body.password;
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username: req.body.username });
 
     if (!user) {
       throw new Error("User does not exist");
     }
     //@ts-ignore
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(req.body.password, user.password);
     if (!isMatch) {
-      throw new Error("Unable to login");
+      throw new Error("Invalid credentials.");
     }
 
     await generateToken(user);
-    //@ts-ignore
-    user.password = undefined;
     res.status(200).send({ success: true, user });
   } catch (error) {
-    console.log(error);
-    res.status(400).send("user not found");
+    res.status(400).send(error);
   }
 };

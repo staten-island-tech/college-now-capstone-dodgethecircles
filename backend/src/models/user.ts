@@ -3,28 +3,35 @@ import bcrypt from "bcryptjs";
 
 const { Schema } = mongoose;
 
-const user = new Schema({
-  username: {
-    type: String,
-    required: true,
+const user = new Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    tokens: {
+      type: Array,
+      default: [],
+    },
+    highscore: {
+      type: Number,
+      default: 0,
+    },
   },
-  password: {
-    type: String,
-    required: true,
-  },
-  tokens: [
-    {
-      token: {
-        type: String,
-        required: false,
+  {
+    toJSON: {
+      transform: function (doc, ret) {
+        delete ret.password;
+        delete ret._id;
+        delete ret.__v;
       },
     },
-  ],
-  highscore: {
-    type: Number,
-    default: 0,
-  },
-});
+  }
+);
 
 user.pre("save", async function (next) {
   const user = this;
