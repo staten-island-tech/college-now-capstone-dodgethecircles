@@ -24,38 +24,17 @@ import {
 } from "@/components/ui/dialog";
 
 // form
-import { set, z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+
 import { use, useEffect, useRef, useState } from "react";
 import { Enemy, clearScreen, isNearEdge } from "@/lib/utils";
-import Leaderboard from "@/components/custom/leaderboard"
-
-const loginFormSchema = z.object({
-  username: z.string().min(2).max(50),
-  password: z.string().min(2).max(50),
-});
-const registerFormSchema = z.object({
-  username: z.string().min(2).max(50),
-  password: z.string().min(2).max(50),
-  confirmPassword: z.string().min(2).max(50),
-});
+import Leaderboard from "@/components/custom/leaderboard";
 
 // Icons
 import { TrophyIcon } from "lucide-react";
 import { EnemyType } from "@/lib/interface";
 import { Button } from "@/components/ui/button";
 import GameList from "@/components/custom/gamelist";
-
+import Login from "@/components/custom/login";
 
 const tags = Array.from({ length: 50 }).map(
   (_, i, a) => `v1.2.0-beta.${a.length - i}`
@@ -64,55 +43,35 @@ const tags = Array.from({ length: 50 }).map(
 // relative top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4"
 
 export default function Home() {
-
   const [windowWidth, setWindowWidth] = useState(1920);
   const [windowHeight, setWindowHeight] = useState(1080);
-  console.log(windowWidth)
-
-    useEffect(() => {
-      const handleResize = () => {
-        setWindowWidth(window.innerWidth);
-        setWindowHeight(window.innerHeight);
-      };
-
-      handleResize();
-
-      window.addEventListener("resize", handleResize);
-    }, []);
-  // 1. Define your form.
-  const loginForm = useForm<z.infer<typeof loginFormSchema>>({
-    resolver: zodResolver(loginFormSchema),
-    defaultValues: {
-      username: "",
-      password: "",
-    },
-  });
-  const registerForm = useForm<z.infer<typeof registerFormSchema>>({
-    resolver: zodResolver(registerFormSchema),
-    defaultValues: {
-      username: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
-
-  // 2. Define a submit handler.
-  function onSubmit(
-    values: z.infer<typeof loginFormSchema> | z.infer<typeof registerFormSchema>
-  ) {
-    // Perform form submission logic here
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-  }
+  console.log(windowWidth);
 
   useEffect(() => {
-    let canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement;
-    let ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
-    let view:boolean = true;
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      setWindowHeight(window.innerHeight);
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+  }, []);
+  // 1. Define your form.
+
+  // 2. Define a submit handler.
+
+  useEffect(() => {
+    let canvas: HTMLCanvasElement = document.getElementById(
+      "canvas"
+    ) as HTMLCanvasElement;
+    let ctx: CanvasRenderingContext2D = canvas.getContext(
+      "2d"
+    ) as CanvasRenderingContext2D;
+    let view: boolean = true;
     let lastFrameTime = 0;
     const frameDuration = 1000 / 60;
-    let enemies:EnemyType[] = [];
+    let enemies: EnemyType[] = [];
     function getEnemies() {
       enemies.push(new Enemy(10, windowWidth, windowHeight));
       // enemies = enemies.sort((a, b) => b.radius - a.radius);
@@ -135,10 +94,9 @@ export default function Home() {
         enemyUpdate();
         lastFrameTime = timestamp;
       }
-      
     }
-    requestAnimationFrame(drawGame)
-    
+    requestAnimationFrame(drawGame);
+
     function enemyUpdate() {
       enemies = enemies.filter((enemy: Enemy) =>
         isNearEdge(enemy.x, enemy.y, windowWidth, windowHeight)
@@ -148,14 +106,18 @@ export default function Home() {
         enemy.update();
       });
     }
-  }, [windowHeight,windowWidth]);
-  
+  }, [windowHeight, windowWidth]);
 
   return (
     <main className="flex min-h-screen flex-row items-center justify-center p-24">
-    <canvas id="canvas" className="absolute" width={windowWidth} height={windowHeight}></canvas>
+      <canvas
+        id="canvas"
+        className="absolute"
+        width={windowWidth}
+        height={windowHeight}
+      ></canvas>
       <div className="flex items-center justify-center h-auto w-auto bg-gradient-to-br from-black to-gray-600 p-10 rounded-lg gap-2 relative">
-        <Leaderboard/>
+        <Leaderboard />
         <div className="bg-white rounded-lg p-3 w-80 h-96">
           {/*  */}
           <Tabs defaultValue="play" className="w-full">
@@ -190,118 +152,7 @@ export default function Home() {
                       Login / Register
                     </DialogTrigger>
                     <DialogContent>
-                      <Tabs defaultValue="login" className="w-full mt-2">
-                        <TabsList className="grid w-full grid-cols-2 ">
-                          <TabsTrigger value="login">Login</TabsTrigger>
-                          <TabsTrigger value="register">Register</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="login">
-                          <Form {...loginForm}>
-                            <form
-                              onSubmit={loginForm.handleSubmit(onSubmit)}
-                              className="space-y-8"
-                            >
-                              <FormField
-                                control={loginForm.control}
-                                name="username"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Username *</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="shadcn" {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                      This is your public display name.
-                                    </FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={loginForm.control}
-                                name="password"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Password *</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="shadcn" {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                      Enter a secure password
-                                    </FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <p className="text-xs font-bold">
-                                * required fields
-                              </p>
-                              <Button type="submit">Submit</Button>
-                            </form>
-                          </Form>
-                        </TabsContent>
-                        <TabsContent value="register">
-                          <Form {...registerForm}>
-                            <form
-                              onSubmit={registerForm.handleSubmit(onSubmit)}
-                              className="space-y-8"
-                            >
-                              <FormField
-                                control={registerForm.control}
-                                name="username"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Username *</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="shadcn" {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                      This is your public display name.
-                                    </FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={registerForm.control}
-                                name="password"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Password *</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="shadcn" {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                      Enter a secure password
-                                    </FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={registerForm.control}
-                                name="confirmPassword"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Confirm Password *</FormLabel>
-                                    <FormControl>
-                                      <Input placeholder="shadcn" {...field} />
-                                    </FormControl>
-                                    <FormDescription>
-                                      Confirm your password
-                                    </FormDescription>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <p className="text-xs font-bold">
-                                * required fields
-                              </p>
-                              <Button type="submit">Submit</Button>
-                            </form>
-                          </Form>
-                        </TabsContent>
-                      </Tabs>
+                      <Login />
                     </DialogContent>
                   </Dialog>
                 </CardFooter>
@@ -334,7 +185,7 @@ export default function Home() {
           </Tabs>
           {/*  */}
         </div>
-        <GameList/>
+        <GameList />
       </div>
     </main>
   );
