@@ -12,7 +12,7 @@ export default function Leaderboard() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await fetch(`http://localhost:3000/leaderboard`).then((res) => res.json());
+        const data = await fetch(`${process.env.BACKEND_URL}/leaderboard`).then((res) => res.json());
         setPlayers(await data);
       } catch (error) {
         console.error(error);

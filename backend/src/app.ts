@@ -7,7 +7,7 @@ import connectToMongoDB from "./db/mongoDB";
 import expressWs from "express-ws";
 
 dotenv.config();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 80;
 const app = express();
 expressWs(app);
 
