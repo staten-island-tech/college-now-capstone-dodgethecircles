@@ -1,6 +1,4 @@
 "use client";
-
-// Components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -140,7 +138,9 @@ export default function Home() {
                     className="mb-4"
                   />
                   <div className="grid w-full grid-cols-2 gap-1">
-                    <Button className="bg-slate-700">SinglePlayer</Button>
+                    <a href="solo">
+                      <Button className="bg-slate-700">SinglePlayer</Button>
+                    </a>
                     <Button className="bg-slate-700">MultiPlayer</Button>
                   </div>
                 </CardContent>
