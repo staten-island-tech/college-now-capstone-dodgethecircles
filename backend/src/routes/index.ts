@@ -31,10 +31,14 @@ const router = express.Router();
 expressWs(router);
 
 router.get("/leaderboard", getLeaderboard);
-router.post("/name/create", createRoom); // probably works idk
 
+router.post("/name/create", createRoom); // probably works idk
 router.post("/login", login);
 router.post("/register", register);
+
+// auth stuff idk
+router.post("/register", register);
+router.post("/login", login);
 
 router.use("/upload", checkAuth);
 router.post("/upload", upload.single("file"), (req, res, next) =>
