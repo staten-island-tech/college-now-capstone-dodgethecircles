@@ -1,24 +1,17 @@
 "use client";
-import { Enemy, clearScreen, enemyUpdate } from "@/lib/utils";
-import { EnemyType, playerType } from "@/lib/interface";
+import { Enemy, clearScreen, enemyUpdate, Player } from "@/lib/utils";
+import { EnemyType, PlayerType } from "@/lib/interface";
 import { useEffect, useState } from "react";
 
 export default function SinglePlayer() {
   const [width, setWidth] = useState(1920);
   const [height, setHeight] = useState(1080);
-  let player: playerType = {
+  let player: PlayerType = {
     x: 500,
     y: 300,
     radius: 15,
     speed: 7,
     color: "grey",
-    draw(ctx) {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fillStyle = this.color;
-      ctx.fill();
-      ctx.closePath();
-    },
   };
 
   useEffect(() => {
