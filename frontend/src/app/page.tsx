@@ -23,6 +23,12 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+
 // form
 import { set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -55,6 +61,7 @@ import { TrophyIcon } from "lucide-react";
 import { EnemyType } from "@/lib/interface";
 import { Button } from "@/components/ui/button";
 import GameList from "@/components/custom/gamelist";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 function Exists({ userExistsError }) {
 	if (userExistsError) {
@@ -71,7 +78,7 @@ export default function Home() {
 	const [userState, setuserState] = useState({
 		username: "",
 		tokens: [],
-		profileImage: "", // Assuming that we are using image links
+		profileImage: "https://github.com/shadcn.png", // Assuming that we are using image links
 		highscore: 0,
 	});
 
@@ -415,14 +422,38 @@ export default function Home() {
 							<Card className="h-full">
 								<CardContent>
 									<div className="flex justify-center w-full mt-4">
-										<Avatar className="w-24 h-24">
-											<AvatarImage src="https://github.com/shadcn.png" />
-											<AvatarFallback>CN</AvatarFallback>
-										</Avatar>
-									</div>
-									<div className="flex justify-center w-full h-28 mt-3 items-center rounded-md border-2 border-dashed text-sm">
-										<h5 className="text-sm">Upload Profile Picture</h5>
-										{/* change this font and add functionality */}
+										<Popover>
+											<PopoverTrigger>
+												<Avatar className="w-24 h-24">
+													<AvatarImage src={userState.profileImage} />
+													<AvatarFallback>CN</AvatarFallback>
+												</Avatar>
+											</PopoverTrigger>
+											<PopoverContent>
+												<div className="flex flex-col text-center h-56 w-full">
+													<h5 className="text-xs mb-1">Profile Pictures</h5>
+													<ScrollArea className="h-56 w-48">
+														<div className="flex flex-row flex-wrap justify-evenly">
+															<Avatar>
+																<AvatarImage src="https://github.com/shadcn.png" />
+																<AvatarFallback>CN</AvatarFallback>
+															</Avatar>
+															<Avatar>
+																<AvatarImage src="https://github.com/shadcn.png" />
+																<AvatarFallback>CN</AvatarFallback>
+															</Avatar>
+															<Avatar>
+																<AvatarImage src="https://github.com/shadcn.png" />
+																<AvatarFallback>CN</AvatarFallback>
+															</Avatar>
+														</div>
+													</ScrollArea>
+												</div>
+												<div>
+													<Input type="file" placeholder="Choose Proifle Image" />
+												</div>
+											</PopoverContent>
+										</Popover>
 									</div>
 									<div className="flex justify-evenly w-full mt-4">
 										<TrophyIcon />
