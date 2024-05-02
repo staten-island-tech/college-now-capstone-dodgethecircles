@@ -1,38 +1,35 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { EnemyType, WhiteBlobType } from "./interface";
+import { EnemyType, PlayerType, ArrowsType } from "./interface";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export function getRandom(min: number, max: number): number {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  let returned = Math.floor(Math.random() * (max - min + 1)) + min;
-  return returned;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 export function enemyUpdate(
   enemies: EnemyType[],
   width: number,
   height: number,
-  ctx: CanvasRenderingContext2D
+  ctx: CanvasRenderingContext2D,
+  player: PlayerType | null = null
 ) {
-  enemies = enemies.filter((enemy: Enemy) => {
-    switch (true) {
-      case enemy.x < -enemy.radius:
-      case enemy.x > enemy.radius + width:
-      case enemy.y < -enemy.radius:
-      case enemy.y > enemy.radius + height:
-        return false;
-      default:
-        return true;
-    }
-  });
+  enemies = enemies.filter(
+    (enemy: Enemy) =>
+      !(
+        enemy.x < -enemy.radius ||
+        enemy.x > enemy.radius + width ||
+        enemy.y < -enemy.radius ||
+        enemy.y > enemy.radius + height
+      )
+  );
   enemies.forEach((enemy: Enemy) => {
     enemy.draw(ctx);
     enemy.update();
+    player === null || player.checkGame(enemy);
   });
   return enemies;
 }
@@ -55,38 +52,6 @@ export function isClickOnCanvas(event: MouseEvent, canvas: HTMLCanvasElement) {
     y >= canvasRect.top &&
     y <= canvasRect.bottom
   );
-}
-
-export function checkGame(
-  enemy: Enemy,
-  value: boolean,
-  whiteBlob: WhiteBlobType
-) {
-  let distance = Math.sqrt(
-    (whiteBlob.x - enemy.x) ** 2 + (whiteBlob.y - enemy.y) ** 2
-  );
-  if (distance < whiteBlob.radius + enemy.radius || value) {
-    return true;
-  }
-}
-
-export function whiteBlobBoundry(
-  whiteBlob: WhiteBlobType,
-  canvas: HTMLCanvasElement
-) {
-  if (whiteBlob.y < whiteBlob.radius) {
-    whiteBlob.y = whiteBlob.radius;
-  }
-  if (whiteBlob.x < whiteBlob.radius) {
-    whiteBlob.x = whiteBlob.radius;
-  }
-  if (whiteBlob.y > canvas.height - whiteBlob.radius) {
-    whiteBlob.y = canvas.height - whiteBlob.radius;
-  }
-  if (whiteBlob.x > canvas.width - whiteBlob.radius) {
-    whiteBlob.x = canvas.width - whiteBlob.radius;
-  }
-  return whiteBlob;
 }
 
 export class Enemy implements EnemyType {
@@ -156,5 +121,61 @@ export class Enemy implements EnemyType {
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     ctx.fillStyle = this.color;
     ctx.fill();
+  }
+}
+
+export class Player implements PlayerType {
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+    this.speed = 5;
+    this.radius = 10;
+    this.color = "white";
+    this.gameOver = false;
+  }
+  x: number;
+  y: number;
+  speed: number;
+  radius: number;
+  color: string;
+  gameOver: boolean;
+
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+  }
+  boundaryCheck(canvas: HTMLCanvasElement) {
+    if (this.y < this.radius) {
+      this.y = this.radius;
+    }
+    if (this.x < this.radius) {
+      this.x = this.radius;
+    }
+    if (this.y > canvas.height - this.radius) {
+      this.y = canvas.height - this.radius;
+    }
+    if (this.x > canvas.width - this.radius) {
+      this.x = canvas.width - this.radius;
+    }
+  }
+  checkGame(enemy: EnemyType) {
+    let distance = Math.sqrt((this.x - enemy.x) ** 2 + (this.y - enemy.y) ** 2);
+    return distance < this.radius + enemy.radius || this.gameOver;
+  }
+  inputs(arrows: ArrowsType) {
+    if (arrows.ArrowDown) {
+      this.y += this.speed;
+    }
+    if (arrows.ArrowUp) {
+      this.y -= this.speed;
+    }
+    if (arrows.ArrowLeft) {
+      this.x -= this.speed;
+    }
+    if (arrows.ArrowRight) {
+      this.x += this.speed;
+    }
   }
 }

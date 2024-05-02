@@ -1,12 +1,12 @@
 "use client";
 import { Enemy, clearScreen, enemyUpdate } from "@/lib/utils";
-import { EnemyType, WhiteBlobType } from "@/lib/interface";
+import { EnemyType, playerType } from "@/lib/interface";
 import { useEffect, useState } from "react";
 
 export default function SinglePlayer() {
   const [width, setWidth] = useState(1920);
   const [height, setHeight] = useState(1080);
-  let whiteBlob: WhiteBlobType = {
+  let player: playerType = {
     x: 500,
     y: 300,
     radius: 15,

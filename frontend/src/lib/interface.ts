@@ -10,13 +10,16 @@ export type EnemyType = {
   draw(ctx: CanvasRenderingContext2D): void;
 };
 
-export type WhiteBlobType = {
+export type PlayerType = {
   x: number;
   y: number;
   speed: number;
   radius: number;
   color: string;
+  gameOver: boolean;
   draw(ctx: CanvasRenderingContext2D): void;
+  boundaryCheck(canvas: HTMLCanvasElement): void;
+  checkGame(enemy: EnemyType): void;
 };
 
 export type ArrowsType = {
@@ -26,7 +29,7 @@ export type ArrowsType = {
   ArrowRight: boolean;
 };
 
-export type PlayerType = {
+export type UserType = {
   username: string;
   highscore: number;
   profilePicture: ImageBitmap;
