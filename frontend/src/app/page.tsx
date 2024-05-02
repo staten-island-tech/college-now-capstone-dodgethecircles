@@ -3,31 +3,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
   CardTitle,
+  CardHeader,
+  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-
-// form
-
-import { use, useEffect, useRef, useState } from "react";
-import { Enemy, clearScreen, isNearEdge } from "@/lib/utils";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useEffect, useState } from "react";
+import { Enemy, clearScreen, enemyUpdate } from "@/lib/utils";
 import Leaderboard from "@/components/custom/leaderboard";
-
-// Icons
 import { TrophyIcon } from "lucide-react";
 import { EnemyType } from "@/lib/interface";
 import { Button } from "@/components/ui/button";
@@ -38,26 +24,20 @@ const tags = Array.from({ length: 50 }).map(
   (_, i, a) => `v1.2.0-beta.${a.length - i}`
 );
 
-// relative top-2/4 left-2/4 -translate-x-2/4 -translate-y-2/4"
-
 export default function Home() {
-  const [windowWidth, setWindowWidth] = useState(1920);
-  const [windowHeight, setWindowHeight] = useState(1080);
-  console.log(windowWidth);
+  const [width, setWidth] = useState(1920);
+  const [height, setHeight] = useState(1080);
 
   useEffect(() => {
     const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-      setWindowHeight(window.innerHeight);
+      setWidth(window.innerWidth);
+      setHeight(window.innerHeight);
     };
 
     handleResize();
 
     window.addEventListener("resize", handleResize);
   }, []);
-  // 1. Define your form.
-
-  // 2. Define a submit handler.
 
   useEffect(() => {
     let canvas: HTMLCanvasElement = document.getElementById(
@@ -66,53 +46,36 @@ export default function Home() {
     let ctx: CanvasRenderingContext2D = canvas.getContext(
       "2d"
     ) as CanvasRenderingContext2D;
-    let view: boolean = true;
     let lastFrameTime = 0;
-    const frameDuration = 1000 / 60;
     let enemies: EnemyType[] = [];
-    function getEnemies() {
-      enemies.push(new Enemy(10, windowWidth, windowHeight));
-      // enemies = enemies.sort((a, b) => b.radius - a.radius);
-    }
-    setInterval(getEnemies, canvas.width / 10);
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState == "visible") {
-        view = true;
-      } else {
-        view = false;
-      }
-    });
+
+    setInterval(
+      () =>
+        document.visibilityState === "visible"
+          ? enemies.push(new Enemy(10, width, height))
+          : null,
+      canvas.width / 10
+    );
+
     function drawGame(timestamp: number) {
       requestAnimationFrame(drawGame);
       const deltaTime = timestamp - lastFrameTime;
-
-      if (deltaTime >= frameDuration) {
-        if (!view) return;
-        clearScreen(ctx, canvas);
-        enemyUpdate();
-        lastFrameTime = timestamp;
-      }
+      if (deltaTime < 1000 / 60 || document.visibilityState !== "visible")
+        return;
+      clearScreen(ctx, canvas);
+      enemies = enemyUpdate(enemies, width, height, ctx);
+      lastFrameTime = timestamp;
     }
     requestAnimationFrame(drawGame);
-
-    function enemyUpdate() {
-      enemies = enemies.filter((enemy: Enemy) =>
-        isNearEdge(enemy.x, enemy.y, windowWidth, windowHeight)
-      );
-      enemies.forEach((enemy: Enemy) => {
-        enemy.draw(ctx);
-        enemy.update();
-      });
-    }
-  }, [windowHeight, windowWidth]);
+  }, [height, width]);
 
   return (
     <main className="flex min-h-screen flex-row items-center justify-center p-24">
       <canvas
         id="canvas"
         className="absolute"
-        width={windowWidth}
-        height={windowHeight}
+        width={width}
+        height={height}
       ></canvas>
       <div className="flex items-center justify-center h-auto w-auto bg-gradient-to-br from-black to-gray-600 p-10 rounded-lg gap-2 relative">
         <Leaderboard />
