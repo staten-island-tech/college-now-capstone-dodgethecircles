@@ -2,6 +2,8 @@
 import { Enemy, clearScreen, enemyUpdate, Player } from "@/lib/utils";
 import { EnemyType, PlayerType } from "@/lib/interface";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Home } from "lucide-react";
 
 export default function SinglePlayer() {
   const [width, setWidth] = useState(1920);
@@ -67,11 +69,13 @@ export default function SinglePlayer() {
           Points: 0
         </h1>
         <h2 className="click inline-block text-2.25rem">Click to Start</h2>
-        <a href="/">
-          <button className="home-button mr-2 mt-0.5 float-right w-16 h-16 inline-block px-10 py-20 border-2 border-solid border-gray-700 rounded-full text-center text-18px text-gray-700 no-underline transition-all duration-200 ease-in-out relative">
-            <i className="fas fa-home font-FontAwesome inline-block mr-12 text-25px"></i>
-          </button>
-        </a>
+
+        <Link
+          href="/"
+          className="flex justify-center content-center relative top-0 left-[95%] home-button  w-8 h-8  border-2 border-solid border-gray-700 rounded-s text-18px text-gray-700  "
+        >
+          <Home />
+        </Link>
       </div>
       <div className="container m-auto mt-4"></div>
     </div>
