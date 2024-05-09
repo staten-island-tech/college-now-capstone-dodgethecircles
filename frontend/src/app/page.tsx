@@ -92,7 +92,6 @@ export default function Home() {
 
   const [windowWidth, setWindowWidth] = useState(1920);
   const [windowHeight, setWindowHeight] = useState(1080);
-  console.log(windowWidth);
 
   useEffect(() => {
     const handleResize = () => {
@@ -156,7 +155,12 @@ export default function Home() {
   }
 
   async function onRegister(values: z.infer<typeof registerFormSchema>) {
-    const response = await fetch("http://localhost:3000/register", {
+    console.log(values);
+
+    delete values.confirmPassword;
+
+    console.log(values);
+    const response = await fetch("http://localhost:8080/register", {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
       cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
