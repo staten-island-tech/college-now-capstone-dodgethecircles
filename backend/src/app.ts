@@ -7,7 +7,7 @@ import connectToMongoDB from "./db/mongoDB";
 import expressWs from "express-ws";
 
 dotenv.config();
-const port = process.env.PORT || 8080;
+const port = 8080;
 const app = express();
 expressWs(app);
 
@@ -16,9 +16,9 @@ app.use(cors());
 //raw requests are now usable properties on req.body
 app.use(express.json());
 app.use(
-  express.urlencoded({
-    extended: true,
-  })
+	express.urlencoded({
+		extended: true,
+	})
 );
 
 // Enable the use of request body parsing middleware
@@ -30,7 +30,7 @@ connectToMongoDB(); // provide mongoDB uri before uncommenting
 app.use("/", router);
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+	console.log(`Server running on port ${port}`);
 });
 
 export { app };

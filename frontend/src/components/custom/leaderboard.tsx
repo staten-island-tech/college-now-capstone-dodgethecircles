@@ -68,7 +68,7 @@ export default function Leaderboard() {
 									<CrownIcon color="gold" />
 								</div>
 								<Avatar>
-									<AvatarImage src={players[2].profilePicture || "@/public/default_pfp.svg"} />
+									<AvatarImage src={players[2].profilePicture || ""} />
 									<AvatarFallback>CN</AvatarFallback>
 								</Avatar>
 								<h4>{players[0].username}</h4>
@@ -88,7 +88,7 @@ export default function Leaderboard() {
 										<CrownIcon color="silver" />
 									</div>
 									<Avatar>
-										<AvatarImage src={players[2].profilePicture || "@/public/default_pfp.svg"} />
+										<AvatarImage src={players[2].profilePicture || ""} />
 										<AvatarFallback>CN</AvatarFallback>
 									</Avatar>
 									<h4>{players[1].username}</h4>
@@ -109,7 +109,7 @@ export default function Leaderboard() {
 										<CrownIcon color="brown" />
 									</div>
 									<Avatar>
-										<AvatarImage src={players[2].profilePicture || "@/public/default_pfp.svg"} />
+										<AvatarImage src={players[2].profilePicture || null} />
 										<AvatarFallback>CN</AvatarFallback>
 									</Avatar>
 									<h4>{players[2].username}</h4>
