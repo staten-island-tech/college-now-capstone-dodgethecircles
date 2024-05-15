@@ -63,9 +63,9 @@ import { Button } from "@/components/ui/button";
 import GameList from "@/components/custom/gamelist";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 
-function Exists({ userExistsError }) {
-	if (userExistsError) {
-		return <p> Username Already Exists </p>;
+function Exists({ error, message }) {
+	if (error) {
+		return <p className="text-red-500 text-sm"> {message} </p>;
 	} else {
 		return null;
 	}
@@ -77,11 +77,13 @@ const tags = Array.from({ length: 50 }).map(
 export default function Home() {
 	const [userState, setuserState] = useState({
 		username: "",
-		tokens: [],
+		authorizationToken: [],
 		profileImage: "https://github.com/shadcn.png", // Assuming that we are using image links
 		highscore: 0,
 		differentImageSrc: "",
-		otherProfileImages: ["https://github.com/shadcn.png"],
+		otherProfileImages: [],
+		authenticated: false, // change this when done with testing back to false
+		authorizationToken: "",
 	});
 
 	const [loginError, setloginError] = useState("");
@@ -123,7 +125,7 @@ export default function Home() {
 
 	// 2. Define a submit handler.
 	async function onLogin(values: z.infer<typeof loginFormSchema>) {
-		const response = await fetch("http://localhost:8080/login", {
+		await fetch("http://localhost:8080/login", {
 			method: "POST", // *GET, POST, PUT, DELETE, etc.
 			mode: "cors", // no-cors, *cors, same-origin
 			cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
@@ -135,20 +137,22 @@ export default function Home() {
 			redirect: "follow", // manual, *follow, error
 			referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
 			body: JSON.stringify(values), // body data type must match "Content-Type" header
-		}).then((res) => {
-
-			if (!res.ok) {
+		}).then(async (res) => {
+			const data = await res.json()
+			if (!data.success) {
 				// need to somehow show this on the form after they submit
-				setloginError(res.json().message);
+				setloginError("Username or Password is incorrect");
 				// only possible error meesage is going to be invalid credentials
 			} else {
 				console.log("logged in")
-				const userData = res.json();
+				const userData = data.user
 
-				// Mutates State with 'userData'
 				userState.username = userData.username;
-				userState.tokens = userData.tokens;
+				userState.authorizationToken = userData.tokens;
 				userState.highscore = userData.highscore;
+				userState.authenticated = true;
+
+				console.log(userState)
 
 				// closes dialog on submit
 				setopen(false);
@@ -180,7 +184,7 @@ export default function Home() {
 			redirect: "follow", // manual, *follow, error
 			referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
 			body: JSON.stringify(userObject), // body data type must match "Content-Type" header
-		}).then((res) => {
+		}).then(async (res) => {
 			if (!res.ok) {
 				// don't need to handle user/pass len error since form has min len
 				// possible error message is username < 6
@@ -202,12 +206,13 @@ export default function Home() {
 					...registerError,
 					userExistsError: false,
 				});
-				const userData = res.json();
+				const userData = await res;
 
 				// Mutates State with 'userData'
 				userState.username = userData.username;
-				userState.tokens = userData.tokens;
+				userState.authorizationToken = userData.tokens;
 				userState.highscore = userData.highscore;
+				userState.authenticated = true;
 
 				// closes dialog on submit
 				setopen(false);
@@ -229,7 +234,23 @@ export default function Home() {
 			differentImageSrc: "",
 		});
 	}
-	const [open, setopen] = useState(false);
+
+	async function uploadFile() {
+		await fetch("http://localhost:8080/uploadFile", {
+			method: "POST", // *GET, POST, PUT, DELETE, etc.
+			mode: "cors", // no-cors, *cors, same-origin
+			cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+			credentials: "same-origin", // include, *same-origin, omit
+			headers: {
+				"Content-Type": "application/json",
+				// 'Content-Type': 'application/x-www-form-urlencoded',
+			},
+			redirect: "follow", // manual, *follow, error
+			referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+			body: JSON.stringify(userObject), // body data type must match "Content-Type" header
+		})
+	}
+	const [isOpen, setopen] = useState(false);
 
 	useEffect(() => {
 		let canvas: HTMLCanvasElement = document.getElementById(
@@ -294,7 +315,7 @@ export default function Home() {
 						{/*  */}
 						<TabsList className="grid w-full grid-cols-2">
 							<TabsTrigger value="play">Play</TabsTrigger>
-							<TabsTrigger value="profile">Profile</TabsTrigger>
+							<TabsTrigger value="profile" disabled={!userState.authenticated}>Profile</TabsTrigger>
 						</TabsList>
 						{/*  */}
 						<TabsContent value="play" className="h-[312px]">
@@ -317,7 +338,7 @@ export default function Home() {
 								<Separator className="my-1" />
 								<CardFooter className="flex flex-col justify-center p-1 mt-3">
 									<p className="text-xs mb-1">Want To Save Your High Scores?</p>
-									<Dialog open={open} onOpenChange={setopen}>
+									<Dialog open={isOpen} onOpenChange={setopen}>
 										<DialogTrigger className="text-sm hover:text-purple-900 ">
 											Login / Register
 										</DialogTrigger>
@@ -391,9 +412,10 @@ export default function Home() {
 																			This is your public display name.
 																		</FormDescription>
 																		<Exists
-																			userExistsError={
+																			error={
 																				registerError.userExistsError
 																			}
+																			message="Username Already Exists"
 																		/>
 																		<FormMessage />
 																	</FormItem>
@@ -427,6 +449,7 @@ export default function Home() {
 																		<FormDescription>
 																			Confirm your password
 																		</FormDescription>
+																		<Exists error={registerError.passwordMismatchError} message="Passwords Do Not Match" />
 																		<FormMessage />
 																	</FormItem>
 																)}
@@ -462,7 +485,8 @@ export default function Home() {
 													<AvatarFallback>CN</AvatarFallback>
 												</Avatar>
 											</PopoverTrigger>
-											<PopoverContent>
+											<PopoverContent onCloseAutoFocus={() => setuserState({ ...userState, differentImageSrc: "" })}>
+
 												<div className="flex flex-col text-center h-56 w-full">
 													<h5 className="text-xs mb-1">Profile Pictures</h5>
 													<ScrollArea className="h-56 w-48">
@@ -486,13 +510,16 @@ export default function Home() {
 														type="file"
 														placeholder="Choose Proifle Image"
 													/>
-													<Button
-														variant="destructive"
-														onClick={resetProfileImage}
-														className="mt-1 w-full"
-													>
-														Reset Profile Image
-													</Button>
+													<div className="flex flex-row mt-1 w-full justify-evenly"  >
+														<Button className="bg-green-400 text-xs w-[48%]" variant="secondary" >Set Profile Image</Button>
+														<Button
+															className="text-xs w-[48%]"
+															variant="destructive"
+															onClick={resetProfileImage}
+														>
+															Reset Profile Image
+														</Button>
+													</div>
 												</div>
 											</PopoverContent>
 										</Popover>
@@ -509,6 +536,6 @@ export default function Home() {
 				</div>
 				<GameList />
 			</div>
-		</main>
+		</main >
 	);
 }
