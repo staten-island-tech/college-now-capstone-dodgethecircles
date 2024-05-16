@@ -36,11 +36,7 @@ router.post("/name/create", createRoom); // probably works idk
 router.post("/login", login);
 router.post("/register", register);
 
-// auth stuff idk
-router.post("/register", register);
-router.post("/login", login);
-
-router.use("/upload", checkAuth);
+//router.use("/upload", checkAuth); need secret key
 router.post("/upload", upload.single("file"), (req, res, next) =>
   uploadPfp(req as MulterReq, res, next)
 );
