@@ -1,4 +1,6 @@
 "use client";
+
+// Components
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -40,7 +42,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { Enemy, clearScreen, isNearEdge } from "@/lib/utils";
 import Leaderboard from "@/components/custom/leaderboard";
 
@@ -55,10 +57,11 @@ const registerFormSchema = z.object({
 });
 
 // Icons
+import { TrophyIcon } from "lucide-react";
 import { EnemyType } from "@/lib/interface";
 import { Button } from "@/components/ui/button";
 import GameList from "@/components/custom/gamelist";
-import Login from "@/components/custom/login";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 function Exists({ error, message }) {
   if (error) {
@@ -81,7 +84,6 @@ export default function Home() {
     differentImageFile: {},
     otherProfileImages: [],
     authenticated: false, // change this when done with testing back to false
-    authorizationToken: "",
   });
 
   const [loginError, setloginError] = useState("");
@@ -310,8 +312,7 @@ export default function Home() {
         height={windowHeight}
       ></canvas>
       <div className="flex items-center justify-center h-auto w-auto bg-gradient-to-br from-black to-gray-600 p-10 rounded-lg gap-2 relative">
-        {/* 	<Leaderboard />
-         */}{" "}
+        <Leaderboard />
         <div className="bg-white rounded-lg p-3 w-80 h-96">
           {/*  */}
           <Tabs defaultValue="play" className="w-full">
