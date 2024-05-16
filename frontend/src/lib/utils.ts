@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { EnemyType, WhiteBlobType } from "./interface";
+import { EnemyType, WhiteBlobType, PlayerType, ArrowsType } from "./interface";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -193,5 +193,85 @@ export class Enemy implements EnemyType {
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     ctx.fillStyle = this.color;
     ctx.fill();
+  }
+}
+
+export function enemyUpdate(
+  enemies: EnemyType[],
+  width: number,
+  height: number,
+  ctx: CanvasRenderingContext2D,
+  player: PlayerType | null = null
+) {
+  enemies = enemies.filter(
+    (enemy: Enemy) =>
+      !(
+        enemy.x < -enemy.radius ||
+        enemy.x > enemy.radius + width ||
+        enemy.y < -enemy.radius ||
+        enemy.y > enemy.radius + height
+      )
+  );
+  enemies.forEach((enemy: Enemy) => {
+    enemy.draw(ctx);
+    enemy.update();
+    player === null || player.checkGame(enemy);
+  });
+  return enemies;
+}
+
+export class Player implements PlayerType {
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+    this.speed = 5;
+    this.radius = 10;
+    this.color = "white";
+    this.gameOver = false;
+  }
+  x: number;
+  y: number;
+  speed: number;
+  radius: number;
+  color: string;
+  gameOver: boolean;
+
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+  }
+  boundaryCheck(canvas: HTMLCanvasElement) {
+    if (this.y < this.radius) {
+      this.y = this.radius;
+    }
+    if (this.x < this.radius) {
+      this.x = this.radius;
+    }
+    if (this.y > canvas.height - this.radius) {
+      this.y = canvas.height - this.radius;
+    }
+    if (this.x > canvas.width - this.radius) {
+      this.x = canvas.width - this.radius;
+    }
+  }
+  checkGame(enemy: EnemyType) {
+    let distance = Math.sqrt((this.x - enemy.x) ** 2 + (this.y - enemy.y) ** 2);
+    return distance < this.radius + enemy.radius || this.gameOver;
+  }
+  inputs(arrows: ArrowsType) {
+    if (arrows.ArrowDown) {
+      this.y += this.speed;
+    }
+    if (arrows.ArrowUp) {
+      this.y -= this.speed;
+    }
+    if (arrows.ArrowLeft) {
+      this.x -= this.speed;
+    }
+    if (arrows.ArrowRight) {
+      this.x += this.speed;
+    }
   }
 }
