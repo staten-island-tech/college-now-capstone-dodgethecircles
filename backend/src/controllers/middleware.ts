@@ -10,6 +10,7 @@ export async function checkAuth(
   res: Response,
   next: NextFunction
 ) {
+	console.log(req.headers.authorization)
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -28,6 +29,5 @@ export async function checkAuth(
   }
 
   req.body.user = await User.findOne({ token: req.headers.authorization });
-
   next();
 }

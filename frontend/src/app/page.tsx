@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/popover";
 
 // form
-import { set, z } from "zod";
+import { any, set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -81,6 +81,7 @@ export default function Home() {
 		profileImage: "https://github.com/shadcn.png", // Assuming that we are using image links
 		highscore: 0,
 		differentImageSrc: "",
+		differentImageFile: {},
 		otherProfileImages: [],
 		authenticated: false, // change this when done with testing back to false
 		authorizationToken: "",
@@ -225,29 +226,34 @@ export default function Home() {
 	function handleProfileImageChange(imageFile: File) {
 		setuserState({
 			...userState,
+			differentImageFile: imageFile,
 			differentImageSrc: URL.createObjectURL(imageFile.target.files[0]),
 		});
 	}
 	function resetProfileImage() {
 		setuserState({
 			...userState,
+			differentImageFile: {},
 			differentImageSrc: "",
 		});
 	}
 
 	async function uploadFile() {
-		await fetch("http://localhost:8080/uploadFile", {
+		const fileForm = new FormData()
+		fileForm.append("file", userState.differentImageFile.target.files[0])
+
+		await fetch("http://localhost:8080/upload", {
 			method: "POST", // *GET, POST, PUT, DELETE, etc.
 			mode: "cors", // no-cors, *cors, same-origin
 			cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
 			credentials: "same-origin", // include, *same-origin, omit
 			headers: {
-				"Content-Type": "application/json",
+				"authorization": `${userState.authorizationToken[0]}`,
 				// 'Content-Type': 'application/x-www-form-urlencoded',
 			},
 			redirect: "follow", // manual, *follow, error
 			referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-			body: JSON.stringify(userObject), // body data type must match "Content-Type" header
+			body: fileForm, // body data type must match "Content-Type" header
 		})
 	}
 	const [isOpen, setopen] = useState(false);
@@ -511,7 +517,7 @@ export default function Home() {
 														placeholder="Choose Proifle Image"
 													/>
 													<div className="flex flex-row mt-1 w-full justify-evenly"  >
-														<Button className="bg-green-400 text-xs w-[48%]" variant="secondary" >Set Profile Image</Button>
+														<Button className="bg-green-400 text-xs w-[48%]" variant="secondary" onClick={uploadFile}  >Set Profile Image</Button>
 														<Button
 															className="text-xs w-[48%]"
 															variant="destructive"
