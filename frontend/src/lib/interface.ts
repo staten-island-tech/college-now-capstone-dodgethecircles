@@ -34,3 +34,12 @@ export type UserType = {
   highscore: number;
   profilePicture: ImageBitmap;
 };
+
+export type WhiteBlobType = {
+  x: number;
+  y: number;
+  speed: number;
+  radius: number;
+  color: string;
+  draw(ctx: CanvasRenderingContext2D): void;
+};
