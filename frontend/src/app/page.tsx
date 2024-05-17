@@ -62,6 +62,7 @@ import { EnemyType } from "@/lib/interface";
 import { Button } from "@/components/ui/button";
 import GameList from "@/components/custom/gamelist";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { argv0 } from "process";
 
 function Exists({ error, message }) {
   if (error) {
@@ -144,15 +145,12 @@ export default function Home() {
         setloginError("Username or Password is incorrect");
         // only possible error meesage is going to be invalid credentials
       } else {
-        console.log("logged in");
         const userData = data.user;
 
         userState.username = userData.username;
         userState.authorizationToken = userData.tokens;
         userState.highscore = userData.highscore;
         userState.authenticated = true;
-
-        console.log(userState);
 
         // closes dialog on submit
         setopen(false);
@@ -207,7 +205,6 @@ export default function Home() {
           userExistsError: false,
         });
         const userData = await res;
-
         // Mutates State with 'userData'
         userState.username = userData.username;
         userState.authorizationToken = userData.tokens;
@@ -246,7 +243,7 @@ export default function Home() {
       cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
       credentials: "same-origin", // include, *same-origin, omit
       headers: {
-        authorization: `${userState.authorizationToken[0]}`,
+        authorization: `Bearer ${userState.authorizationToken[0]}`,
         // 'Content-Type': 'application/x-www-form-urlencoded',
       },
       redirect: "follow", // manual, *follow, error
