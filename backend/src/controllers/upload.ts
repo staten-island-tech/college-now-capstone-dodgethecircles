@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import User from "../models/user";
 import { v4 as uuidv4 } from "uuid";
 import { MulterReq } from "../types/interface";
@@ -6,9 +6,9 @@ import { MulterReq } from "../types/interface";
 export const uploadPfp = async (
 	req: MulterReq,
 	res: Response,
-	next: NextFunction 
+	next: NextFunction
 ) => {
-	const authHeader = req.headers.authorization;	
+	const authHeader = req.headers.authorization;
 	const authToken = authHeader.slice(7);
 
 	const user = await User.findOne({

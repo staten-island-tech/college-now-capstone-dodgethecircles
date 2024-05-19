@@ -11,27 +11,27 @@ import { checkAuth } from "../controllers/middleware";
 import { wsConnect } from "../controllers/ws";
 import { getLeaderboard } from "../controllers/score";
 
-const storage = multer.diskStorage({
-	filename: function(req, file, cb) {
-		cb(null, uuidv4() + path.extname(file.originalname));
-	},
-});
-//const storage = multer.mongoDbBufferStorage({
-//  url: "mongodb://localhost:27017",
-//  collection: "uploads",
-//  metadata: function (req: Request, file: , cb: Function) {
-//    cb(null, { fieldname: uuidv4() + file.fieldname });
-//  },
-//});
-
 //const storage = multer.diskStorage({
-//	destination: function(req, file, cb) {
-//		cb(null, `uploads/${req.body.user["_id"]}/`);
-//	},
 //	filename: function(req, file, cb) {
 //		cb(null, uuidv4() + path.extname(file.originalname));
 //	},
 //});
+// const storage = multer.mongoDbBufferStorage({
+// 	url: "mongodb://localhost:27017",
+// 	collection: "uploads",
+// 	metadata: function(req: Request, file: , cb: Function) {
+// 		cb(null, { fieldname: uuidv4() + file.fieldname });
+// 	},
+// });
+
+const storage = multer.diskStorage({
+	destination: function(req, file, cb) {
+		cb(null, `uploads/${req.body.user["_id"]}/`);
+	},
+	filename: function(req, file, cb) {
+		cb(null, uuidv4() + path.extname(file.originalname));
+	},
+});
 
 const upload = multer({ storage: storage });
 

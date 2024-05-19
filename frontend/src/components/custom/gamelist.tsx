@@ -25,7 +25,7 @@ export default function gamelist() {
     
     return (<div className="bg-white rounded-lg p-3 h-80 w-64">
     <h3 className="text-center text-lg underline">Game Room</h3>
-    <div className="flex flex-row justify-evenly w-4/5">
+    <div className="flex flex-row justify-evenly w-4/5 mt-1">
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
