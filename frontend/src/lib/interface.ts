@@ -17,7 +17,8 @@ export type PlayerType = {
   radius: number;
   color: string;
   gameOver: boolean;
-  checkGame(enemy: EnemyType): number;
+  points: number;
+  checkGame(enemy: EnemyType): void;
   update(
     arrows: ArrowsType,
     canvas: HTMLCanvasElement,

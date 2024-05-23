@@ -9,7 +9,7 @@ import { register, login } from "../controllers/auth";
 import { uploadPfp, getImage } from "../controllers/image";
 import { checkAuth } from "../controllers/middleware";
 import { wsConnect } from "../controllers/ws";
-import { getLeaderboard } from "../controllers/score";
+import { getLeaderboard, updateLevel } from "../controllers/score";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -26,6 +26,7 @@ const router = express.Router();
 //@ts-ignore
 expressWs(router);
 
+router.post("/update", checkAuth, updateLevel);
 router.get("/leaderboard", getLeaderboard);
 
 router.post("/name/create", createRoom); // probably works idk

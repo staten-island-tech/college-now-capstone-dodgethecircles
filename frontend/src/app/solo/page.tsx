@@ -4,12 +4,16 @@ import { EnemyType, UserType } from "@/lib/interface";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Home } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-export default function SinglePlayer({ user }: { user: UserType }) {
+export default function SinglePlayer() {
+  const router = useRouter();
   const [width, setWidth] = useState(1920);
   const [height, setHeight] = useState(1080);
   const [points, setPoints] = useState(0);
   let requestId: number;
+  console.log(router);
+  let { user } = router.query as UserType;
   useEffect(() => {
     const handleResize = () => {
       setWidth(window.innerWidth);
@@ -45,24 +49,25 @@ export default function SinglePlayer({ user }: { user: UserType }) {
       cancelAnimationFrame(requestId);
       requestId = requestAnimationFrame(drawGame);
       const deltaTime = timestamp - lastFrameTime;
-      if (
-        deltaTime < 1000 / 60 ||
-        document.visibilityState !== "visible" ||
-        player.gameOver
-      )
+      console.log(user);
+      if (player.gameOver && user.highscore < player.points) {
+        user.highscore = player.points;
+        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.tokens[0]}`,
+          },
+          body: JSON.stringify({ score: user.highscore }),
+        }).catch((err) => console.log(err));
+
+        return;
+      }
+      if (deltaTime < 1000 / 60 || document.visibilityState !== "visible")
         return;
       clearScreen(ctx, canvas);
-      let add = 0;
-      enemies = enemyUpdate(
-        enemies,
-        width,
-        height,
-        ctx,
-        player,
-        setPoints,
-        points
-      );
-
+      enemies = enemyUpdate(enemies, width, height, ctx, player);
+      setPoints(player.points);
       player.update(arrows, canvas, ctx);
       lastFrameTime = timestamp;
     }

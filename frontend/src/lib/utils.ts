@@ -201,9 +201,7 @@ export function enemyUpdate(
   width: number,
   height: number,
   ctx: CanvasRenderingContext2D,
-  player: PlayerType | null = null,
-  setPoints: ((value: number) => void) | null = null,
-  points: number | null = null
+  player: PlayerType | null = null
 ): EnemyType[] {
   let score = 0;
   enemies = enemies.filter((enemy: Enemy) => {
@@ -216,7 +214,7 @@ export function enemyUpdate(
       return false;
     enemy.draw(ctx);
     enemy.update();
-    player === null || (score += player.checkGame(enemy));
+    player !== null ? player.checkGame(enemy) : "";
     return enemy.radius > 0;
   });
 
@@ -245,6 +243,7 @@ export class Arrows implements ArrowsType {
 
 export class Player implements PlayerType {
   constructor(canvas: HTMLCanvasElement) {
+    this.points = 0;
     this.x = canvas.width / 2;
     this.y = canvas.height / 2;
     this.speed = canvas.width / 200;
@@ -258,17 +257,17 @@ export class Player implements PlayerType {
   radius: number;
   color: string;
   gameOver: boolean;
-  checkGame(enemy: EnemyType): number {
+  points: number;
+  checkGame(enemy: EnemyType) {
     const distance = Math.sqrt(
       (this.x - enemy.x) ** 2 + (this.y - enemy.y) ** 2
     );
     if (enemy.radius < this.radius && distance < this.radius + enemy.radius) {
       this.radius += 0.2;
       enemy.radius = 0;
-      return 1;
+      this.points += 1;
     }
     this.gameOver = distance < this.radius + enemy.radius || this.gameOver;
-    return 0;
   }
   update(
     arrows: ArrowsType,

@@ -16,14 +16,9 @@ export const getLeaderboard = async (req: Request, res: Response) => {
 
 export const updateLevel = async (req: Request, res: Response) => {
   try {
-    const user = await User.findOne({ username: req.body.username });
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
-      return;
-    }
-    if (req.body.score > user.highscore) {
-      user.highscore = req.body.score;
-      await user.save();
+    if (req.body.score > req.body.user.highscore) {
+      req.body.user.highscore = req.body.score;
+      await req.body.user.save();
       res.json({ message: "Highscore updated" });
     } else {
       res.json({ message: "Highscore not updated" });

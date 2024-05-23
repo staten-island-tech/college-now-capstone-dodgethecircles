@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
+import Link from "next/link";
 import {
   Dialog,
   DialogContent,
@@ -45,6 +45,9 @@ import {
 import { use, useEffect, useRef, useState } from "react";
 import { Enemy, clearScreen, isNearEdge } from "@/lib/utils";
 import Leaderboard from "@/components/custom/leaderboard";
+
+import { useAppSelector } from "@/lib/store";
+import { setAuthState } from "@/lib/authSlice";
 
 const loginFormSchema = z.object({
   username: z.string(),
@@ -78,6 +81,7 @@ const tags = Array.from({ length: 50 }).map(
 );
 
 export default function Home() {
+  const authState = useAppSelector((state) => state.auth.authState);
   const [userState, setUserState]: [UserStateType, Function] = useState({
     username: "",
     _id: "",
@@ -333,11 +337,29 @@ export default function Home() {
                     placeholder="Enter A Name"
                     className="mb-4"
                   />
-                  <div className="grid w-full grid-cols-2 gap-1">
-                    <a href="/solo">
+                  <div className="flex justify center">
+                    <Link
+                      className="w-1/2"
+                      href={{
+                        pathname: "/solo",
+                        query: {
+                          user: JSON.stringify(userState),
+                        },
+                      }}
+                    >
                       <Button className="bg-slate-700">SinglePlayer</Button>
-                    </a>
-                    <Button className="bg-slate-700">MultiPlayer</Button>
+                    </Link>
+                    <Link
+                      className="inline"
+                      href={{
+                        pathname: "/",
+                        query: {
+                          user: Object.create(userState),
+                        },
+                      }}
+                    >
+                      <Button className="bg-slate-700">MultiPlayer</Button>
+                    </Link>
                   </div>
                 </CardContent>
                 <Separator className="my-1" />
