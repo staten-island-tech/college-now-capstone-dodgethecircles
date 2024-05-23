@@ -11,11 +11,11 @@ import { checkAuth } from "../controllers/middleware";
 import { wsConnect } from "../controllers/ws";
 import { getLeaderboard } from "../controllers/score";
 
-//const storage = multer.diskStorage({
-//	filename: function(req, file, cb) {
-//		cb(null, uuidv4() + path.extname(file.originalname));
-//	},
-//});
+const storage = multer.diskStorage({
+	filename: function(req, file, cb) {
+		cb(null, uuidv4() + path.extname(file.originalname));
+	},
+});
 // const storage = multer.mongoDbBufferStorage({
 // 	url: "mongodb://localhost:27017",
 // 	collection: "uploads",
@@ -24,14 +24,14 @@ import { getLeaderboard } from "../controllers/score";
 // 	},
 // });
 
-const storage = multer.diskStorage({
-	destination: function(req, file, cb) {
-		cb(null, `uploads/${req.body.user["_id"]}/`);
-	},
-	filename: function(req, file, cb) {
-		cb(null, uuidv4() + path.extname(file.originalname));
-	},
-});
+//const storage = multer.diskStorage({
+//	destination: function(req, file, cb) {
+//		cb(null, `uploads/${req.body.user["_id"]}/`);
+//	},
+//	filename: function(req, file, cb) {
+//		cb(null, uuidv4() + path.extname(file.originalname));
+//	},
+//});
 
 const upload = multer({ storage: storage });
 
@@ -45,8 +45,8 @@ router.post("/name/create", createRoom); // probably works idk
 router.post("/login", login);
 router.post("/register", register);
 
-//router.use("/upload", checkAuth); //need secret key
-router.post("/upload", upload.single("file"), checkAuth, (req, res, next) =>
+router.use("/upload", checkAuth); //need secret key
+router.post("/upload", upload.single("file"), (req, res, next) =>
 	uploadPfp(req as MulterReq, res, next)
 );
 

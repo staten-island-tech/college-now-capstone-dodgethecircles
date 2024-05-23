@@ -14,6 +14,7 @@ export async function checkAuth(
 	const authHeader = req.headers.authorization;
 
 	if (!authHeader || !authHeader.startsWith("Bearer ")) {
+		console.log("Please Provide Auth Token");	
 		return res.status(401).json({ message: "Please Provide Auth Token" });
 	}
 
@@ -23,8 +24,11 @@ export async function checkAuth(
 		jwt.verify(authToken, process.env.SECRET_KEY as string);
 	} catch (err) {
 		if (err instanceof jwt.TokenExpiredError) {
+			console.log("Token expired");	
 			return res.status(401).json({ success: false, message: "Token expired" });
 		}
+
+		console.log("Invalid token");	
 		return res.status(401).json({ success: false, message: "Invalid token" });
 	}
 
