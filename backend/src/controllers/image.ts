@@ -1,6 +1,4 @@
 import { Response, Request, NextFunction } from "express";
-import User from "../models/user";
-import { v4 as uuidv4 } from "uuid";
 import { MulterReq } from "../types/interface";
 import path from "path";
 
@@ -9,9 +7,9 @@ export const uploadPfp = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log(req.file);
-  req.file.filename = req.file.filename;
   try {
+    req.body.user.pfp = req.file.filename;
+    req.body.user.save();
     res.status(201).json({
       msg: "File uploaded successfully",
     });

@@ -10,34 +10,31 @@ export async function checkAuth(
   res: Response,
   next: NextFunction
 ) {
-  console.log(req.body._id);
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ message: "Please Provide Auth Token" });
   }
 
-  const authToken = authHeader.slice(7);
+  let data = "";
 
-  try {
-    jwt.verify(
-      authToken,
-      process.env.SECRET_KEY as string,
-      function (err, decoded) {
-        if (err) {
-          console.log(err);
-        }
+  jwt.verify(
+    authHeader.slice(7),
+    process.env.SECRET_KEY as string,
+    function (err, decoded) {
+      if (err instanceof jwt.TokenExpiredError) {
+        return res
+          .status(401)
+          .json({ success: false, message: "Token expired" });
+      } else if (err) {
+        return res
+          .status(401)
+          .json({ success: false, message: "Invalid token" });
       }
-    );
-  } catch (err) {
-    if (err instanceof jwt.TokenExpiredError) {
-      console.log("Token expired");
-      return res.status(401).json({ success: false, message: "Token expired" });
+      data = decoded as string;
     }
-    console.log("Token");
-    return res.status(401).json({ success: false, message: "Invalid token" });
-  }
+  );
 
-  req.body.user = await User.findOne({ tokens: { $in: [authToken] } });
+  req.body.user = await User.findOne({ _id: data });
   next();
 }

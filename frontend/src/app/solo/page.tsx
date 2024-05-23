@@ -1,21 +1,15 @@
 "use client";
-import { Enemy, clearScreen, enemyUpdate, Player } from "@/lib/utils";
-import { EnemyType, PlayerType } from "@/lib/interface";
+import { Enemy, clearScreen, enemyUpdate, Player, Arrows } from "@/lib/utils";
+import { EnemyType, UserType } from "@/lib/interface";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Home } from "lucide-react";
 
-export default function SinglePlayer() {
+export default function SinglePlayer({ user }: { user: UserType }) {
   const [width, setWidth] = useState(1920);
   const [height, setHeight] = useState(1080);
-  let player: PlayerType = {
-    x: 500,
-    y: 300,
-    radius: 15,
-    speed: 7,
-    color: "grey",
-  };
-
+  const [points, setPoints] = useState(0);
+  let requestId: number;
   useEffect(() => {
     const handleResize = () => {
       setWidth(window.innerWidth);
@@ -25,9 +19,6 @@ export default function SinglePlayer() {
     handleResize();
 
     window.addEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
     let canvas: HTMLCanvasElement = document.getElementById(
       "canvas"
     ) as HTMLCanvasElement;
@@ -36,25 +27,58 @@ export default function SinglePlayer() {
     ) as CanvasRenderingContext2D;
     let lastFrameTime = 0;
     let enemies: EnemyType[] = [];
+    let player = new Player(canvas);
+    let arrows = new Arrows();
+
+    document.body.addEventListener("keydown", (event) => arrows.keyDown(event));
+    document.body.addEventListener("keyup", (event) => arrows.keyUp(event));
 
     setInterval(
       () =>
-        document.visibilityState === "visible"
+        document.visibilityState === "visible" && !player.gameOver
           ? enemies.push(new Enemy(10, width, height))
           : null,
       canvas.width / 10
     );
 
     function drawGame(timestamp: number) {
-      requestAnimationFrame(drawGame);
+      cancelAnimationFrame(requestId);
+      requestId = requestAnimationFrame(drawGame);
       const deltaTime = timestamp - lastFrameTime;
-      if (deltaTime < 1000 / 60 || document.visibilityState !== "visible")
+      if (
+        deltaTime < 1000 / 60 ||
+        document.visibilityState !== "visible" ||
+        player.gameOver
+      )
         return;
       clearScreen(ctx, canvas);
-      enemies = enemyUpdate(enemies, width, height, ctx);
+      let add = 0;
+      enemies = enemyUpdate(
+        enemies,
+        width,
+        height,
+        ctx,
+        player,
+        setPoints,
+        points
+      );
+
+      player.update(arrows, canvas, ctx);
       lastFrameTime = timestamp;
     }
-    requestAnimationFrame(drawGame);
+    drawGame(0);
+    window.addEventListener("click", () => {
+      if (!player.gameOver) return;
+      player.gameOver = false;
+      player = new Player(canvas);
+      arrows = new Arrows();
+      enemies = [];
+    });
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(requestId);
+    };
   }, [height, width]);
   return (
     <div>
@@ -65,8 +89,8 @@ export default function SinglePlayer() {
         height={height}
       ></canvas>
       <div className="topBar grid grid-areas-score-click-home">
-        <h1 id="score" className="ml-4 text-2xl inline-block">
-          Points: 0
+        <h1 id="score" className="ml-4 text-2xl absolute">
+          Points: {points}
         </h1>
         <h2 className="click inline-block text-2.25rem">Click to Start</h2>
 

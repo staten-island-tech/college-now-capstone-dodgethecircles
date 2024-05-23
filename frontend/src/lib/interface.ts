@@ -17,9 +17,12 @@ export type PlayerType = {
   radius: number;
   color: string;
   gameOver: boolean;
-  draw(ctx: CanvasRenderingContext2D): void;
-  boundaryCheck(canvas: HTMLCanvasElement): void;
-  checkGame(enemy: EnemyType): void;
+  checkGame(enemy: EnemyType): number;
+  update(
+    arrows: ArrowsType,
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D
+  ): void;
 };
 
 export type ArrowsType = {

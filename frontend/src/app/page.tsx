@@ -64,6 +64,7 @@ import GameList from "@/components/custom/gamelist";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { argv0 } from "process";
 import { UserType, UserStateType } from "@/lib/interface";
+import { enemyUpdate } from "@/lib/utils";
 
 function Exists({ error, message }: { error: Error; message: string }) {
   if (error) {
@@ -96,13 +97,13 @@ export default function Home() {
     passwordMismatchError: false,
   });
 
-  const [windowWidth, setWindowWidth] = useState(1920);
-  const [windowHeight, setWindowHeight] = useState(1080);
+  const [width, setWidth] = useState(1920);
+  const [height, setHeight] = useState(1080);
 
   useEffect(() => {
     const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-      setWindowHeight(window.innerHeight);
+      setWidth(window.innerWidth);
+      setHeight(window.innerHeight);
     };
 
     handleResize();
@@ -207,7 +208,6 @@ export default function Home() {
         userExistsError: false,
       });
       const userData: UserType = await res.json();
-      console.log(userData);
       // Mutates State with 'userData'
       userState.username = userData.username;
       userState.authorizationToken = userData.tokens;
@@ -222,10 +222,10 @@ export default function Home() {
   }
 
   function handleProfileImageChange(imageFile: File) {
-    console.log(imageFile);
     setUserState({
       ...userState,
       differentImageFile: imageFile,
+      //@ts-ignore
       differentImageSrc: URL.createObjectURL(imageFile.target.files[0]),
     });
   }
@@ -239,11 +239,8 @@ export default function Home() {
 
   async function uploadFile() {
     const fileForm = new FormData();
-    console.log(userState);
+    //@ts-ignore
     fileForm.append("file", userState.differentImageFile.target.files[0]);
-    console.log(userState._id);
-    fileForm.append("_id", userState._id);
-    console.log(fileForm.getAll("_id"));
 
     await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/upload`, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -260,9 +257,9 @@ export default function Home() {
       body: fileForm, // body data type must match "Content-Type" header
     }).then((res) => {
       if (!res.ok) {
-        console.log(res.json());
+        return;
       }
-
+      setRefreshLeaderboard(refreshLeaderboard + 1);
       userState.profileImage = userState.differentImageSrc;
     });
   }
@@ -278,10 +275,9 @@ export default function Home() {
     ) as CanvasRenderingContext2D;
     let view: boolean = true;
     let lastFrameTime = 0;
-    const frameDuration = 1000 / 60;
     let enemies: EnemyType[] = [];
     function getEnemies() {
-      enemies.push(new Enemy(10, windowWidth, windowHeight));
+      enemies.push(new Enemy(10, width, height));
       // enemies = enemies.sort((a, b) => b.radius - a.radius);
     }
     setInterval(getEnemies, canvas.width / 10);
@@ -295,34 +291,22 @@ export default function Home() {
     function drawGame(timestamp: number) {
       requestAnimationFrame(drawGame);
       const deltaTime = timestamp - lastFrameTime;
-
-      if (deltaTime >= frameDuration) {
-        if (!view) return;
-        clearScreen(ctx, canvas);
-        enemyUpdate();
-        lastFrameTime = timestamp;
-      }
+      if (deltaTime < 1000 / 60 || document.visibilityState !== "visible")
+        return;
+      clearScreen(ctx, canvas);
+      enemies = enemyUpdate(enemies, width, height, ctx);
+      lastFrameTime = timestamp;
     }
     requestAnimationFrame(drawGame);
-
-    function enemyUpdate() {
-      enemies = enemies.filter((enemy: Enemy) =>
-        isNearEdge(enemy.x, enemy.y, windowWidth, windowHeight)
-      );
-      enemies.forEach((enemy: Enemy) => {
-        enemy.draw(ctx);
-        enemy.update();
-      });
-    }
-  }, [windowHeight, windowWidth]);
+  }, [height, width]);
 
   return (
     <main className="flex min-h-screen flex-row items-center justify-center p-24">
       <canvas
         id="canvas"
         className="absolute"
-        width={windowWidth}
-        height={windowHeight}
+        width={width}
+        height={height}
       ></canvas>
       <div className="flex items-center justify-center h-auto w-auto bg-gradient-to-br from-black to-gray-600 p-10 rounded-lg gap-2 relative">
         <Leaderboard key={refreshLeaderboard} />
@@ -350,7 +334,9 @@ export default function Home() {
                     className="mb-4"
                   />
                   <div className="grid w-full grid-cols-2 gap-1">
-                    <Button className="bg-slate-700">SinglePlayer</Button>
+                    <a href="/solo">
+                      <Button className="bg-slate-700">SinglePlayer</Button>
+                    </a>
                     <Button className="bg-slate-700">MultiPlayer</Button>
                   </div>
                 </CardContent>
@@ -443,6 +429,7 @@ export default function Home() {
                                       This is your public display name.
                                     </FormDescription>
                                     <Exists
+                                      //@ts-ignore
                                       error={registerError.userExistsError}
                                       message="Username Already Exists"
                                     />
@@ -489,6 +476,7 @@ export default function Home() {
                                       Confirm your password
                                     </FormDescription>
                                     <Exists
+                                      //@ts-ignore
                                       error={
                                         registerError.passwordMismatchError
                                       }
@@ -553,6 +541,7 @@ export default function Home() {
                         </div>
                         <div>
                           <Input
+                            //@ts-ignore
                             onChange={(e) => handleProfileImageChange(e)}
                             type="file"
                             placeholder="Choose Proifle Image"

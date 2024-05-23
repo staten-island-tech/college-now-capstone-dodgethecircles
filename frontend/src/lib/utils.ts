@@ -157,23 +157,23 @@ export class Enemy implements EnemyType {
       case 1:
         this.x = -this.radius;
         this.y = getRandom(0, height);
-        this.speedX = (Math.random() * width) / 200 + 0.1;
+        this.speedX = (Math.random() * width) / 300 + 0.1;
         this.speedY =
-          (-1) ** getRandom(1, 2) * ((Math.random() * height) / 200 + 0.1);
+          (-1) ** getRandom(1, 2) * ((Math.random() * height) / 300 + 0.1);
         break;
       case 2:
         this.x = getRandom(0, width);
         this.y = -this.radius;
         this.speedX =
-          (-1) ** getRandom(1, 2) * ((Math.random() * width) / 200 + 0.1);
+          (-1) ** getRandom(1, 2) * ((Math.random() * width) / 300 + 0.1);
         this.speedY = (Math.random() * height) / 200 + 0.1;
         break;
       case 3:
         this.x = width + this.radius;
         this.y = getRandom(0, height);
-        this.speedX = -((Math.random() * width) / 200 + 0.1);
+        this.speedX = -((Math.random() * width) / 300 + 0.1);
         this.speedY =
-          (-1) ** getRandom(1, 2) * ((Math.random() * height) / 200 + 0.1);
+          (-1) ** getRandom(1, 2) * ((Math.random() * height) / 300 + 0.1);
         break;
       case 4:
         this.x = getRandom(0, width);
@@ -201,32 +201,55 @@ export function enemyUpdate(
   width: number,
   height: number,
   ctx: CanvasRenderingContext2D,
-  player: PlayerType | null = null
-) {
-  enemies = enemies.filter(
-    (enemy: Enemy) =>
-      !(
-        enemy.x < -enemy.radius ||
-        enemy.x > enemy.radius + width ||
-        enemy.y < -enemy.radius ||
-        enemy.y > enemy.radius + height
-      )
-  );
-  enemies.forEach((enemy: Enemy) => {
+  player: PlayerType | null = null,
+  setPoints: ((value: number) => void) | null = null,
+  points: number | null = null
+): EnemyType[] {
+  let score = 0;
+  enemies = enemies.filter((enemy: Enemy) => {
+    if (
+      enemy.x < -enemy.radius ||
+      enemy.x > enemy.radius + width ||
+      enemy.y < -enemy.radius ||
+      enemy.y > enemy.radius + height
+    )
+      return false;
     enemy.draw(ctx);
     enemy.update();
-    player === null || player.checkGame(enemy);
+    player === null || (score += player.checkGame(enemy));
+    return enemy.radius > 0;
   });
+
   return enemies;
 }
 
+export class Arrows implements ArrowsType {
+  ArrowUp: boolean;
+  ArrowDown: boolean;
+  ArrowLeft: boolean;
+  ArrowRight: boolean;
+  constructor() {
+    this.ArrowUp = false;
+    this.ArrowDown = false;
+    this.ArrowLeft = false;
+    this.ArrowRight = false;
+  }
+  keyDown(i: KeyboardEvent) {
+    this[i.key as keyof ArrowsType] = true;
+  }
+
+  keyUp(i: KeyboardEvent) {
+    this[i.key as keyof ArrowsType] = false;
+  }
+}
+
 export class Player implements PlayerType {
-  constructor(x: number, y: number) {
-    this.x = x;
-    this.y = y;
-    this.speed = 5;
-    this.radius = 10;
-    this.color = "white";
+  constructor(canvas: HTMLCanvasElement) {
+    this.x = canvas.width / 2;
+    this.y = canvas.height / 2;
+    this.speed = canvas.width / 200;
+    this.radius = canvas.width / 50;
+    this.color = "gray";
     this.gameOver = false;
   }
   x: number;
@@ -235,43 +258,37 @@ export class Player implements PlayerType {
   radius: number;
   color: string;
   gameOver: boolean;
+  checkGame(enemy: EnemyType): number {
+    const distance = Math.sqrt(
+      (this.x - enemy.x) ** 2 + (this.y - enemy.y) ** 2
+    );
+    if (enemy.radius < this.radius && distance < this.radius + enemy.radius) {
+      this.radius += 0.2;
+      enemy.radius = 0;
+      return 1;
+    }
+    this.gameOver = distance < this.radius + enemy.radius || this.gameOver;
+    return 0;
+  }
+  update(
+    arrows: ArrowsType,
+    canvas: HTMLCanvasElement,
+    ctx: CanvasRenderingContext2D
+  ) {
+    if (arrows.ArrowDown) this.y += this.speed;
+    if (arrows.ArrowUp) this.y -= this.speed;
+    if (arrows.ArrowLeft) this.x -= this.speed;
+    if (arrows.ArrowRight) this.x += this.speed;
+    if (this.y < this.radius) this.y = this.radius;
+    if (this.x < this.radius) this.x = this.radius;
+    if (this.y > canvas.height - this.radius)
+      this.y = canvas.height - this.radius;
+    if (this.x > canvas.width - this.radius)
+      this.x = canvas.width - this.radius;
 
-  draw(ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     ctx.fillStyle = this.color;
     ctx.fill();
-  }
-  boundaryCheck(canvas: HTMLCanvasElement) {
-    if (this.y < this.radius) {
-      this.y = this.radius;
-    }
-    if (this.x < this.radius) {
-      this.x = this.radius;
-    }
-    if (this.y > canvas.height - this.radius) {
-      this.y = canvas.height - this.radius;
-    }
-    if (this.x > canvas.width - this.radius) {
-      this.x = canvas.width - this.radius;
-    }
-  }
-  checkGame(enemy: EnemyType) {
-    let distance = Math.sqrt((this.x - enemy.x) ** 2 + (this.y - enemy.y) ** 2);
-    return distance < this.radius + enemy.radius || this.gameOver;
-  }
-  inputs(arrows: ArrowsType) {
-    if (arrows.ArrowDown) {
-      this.y += this.speed;
-    }
-    if (arrows.ArrowUp) {
-      this.y -= this.speed;
-    }
-    if (arrows.ArrowLeft) {
-      this.x -= this.speed;
-    }
-    if (arrows.ArrowRight) {
-      this.x += this.speed;
-    }
   }
 }

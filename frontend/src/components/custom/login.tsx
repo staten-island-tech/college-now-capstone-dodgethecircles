@@ -32,7 +32,6 @@ async function onSubmit(
       body: JSON.stringify(values),
     }
   );
-  console.log(res.json());
 }
 
 export default function login() {
