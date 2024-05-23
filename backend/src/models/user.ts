@@ -22,8 +22,7 @@ const user = new Schema(
       default: 0,
     },
     pfp: {
-      type: Buffer,
-      contentType: String,
+      type: String,
       default: "default_pfp.svg",
     },
   },
@@ -31,7 +30,6 @@ const user = new Schema(
     toJSON: {
       transform: function (doc, ret) {
         delete ret.password;
-        delete ret._id;
         delete ret.__v;
       },
     },

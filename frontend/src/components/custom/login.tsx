@@ -16,16 +16,23 @@ const registerFormSchema = z.object({
   confirmPassword: z.string().min(2).max(50),
 });
 
-function onSubmit(
+async function onSubmit(
   values: z.infer<typeof loginFormSchema> | z.infer<typeof registerFormSchema>
 ) {
-  const res = fetch(`${process.env.BACKEND_URL}/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(values),
-  });
+  const res = await fetch(
+    //@ts-ignore
+    process.env.BACKEND_URL + values.confirmPassword === null
+      ? "/login"
+      : "/register",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    }
+  );
+  console.log(res.json());
 }
 
 export default function login() {

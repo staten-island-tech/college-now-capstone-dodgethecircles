@@ -8,7 +8,7 @@ dotenv.config();
 
 const generateToken = async function (user: any) {
   return jwt.sign({ _id: user._id }, `${process.env.SECRET_KEY}`, {
-    expiresIn: 60 * 60,
+    expiresIn: 60 * 60 * 60,
   });
 };
 
@@ -49,7 +49,7 @@ export const register = async (req: Request, res: Response) => {
       user.tokens.push(token);
       user.save();
 
-      res.status(201).send({ user });
+      res.status(201).send(user);
     });
   } catch (error) {
     if (error instanceof Error) res.status(400).send({ msg: error.message });
@@ -74,7 +74,7 @@ export const login = async (req: Request, res: Response) => {
     }
 
     await generateToken(user);
-    res.status(200).send({ success: true, user });
+    res.status(200).send(user);
   } catch (error) {
     res.status(400).send(error);
   }

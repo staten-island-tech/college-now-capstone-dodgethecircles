@@ -32,7 +32,21 @@ export type ArrowsType = {
 export type UserType = {
   username: string;
   highscore: number;
-  profilePicture: ImageBitmap;
+  pfp: String;
+  tokens: string[];
+  _id: string;
+};
+
+export type UserStateType = {
+  username: string;
+  authorizationToken: string[];
+  highscore: number;
+  authenticated: boolean;
+  profileImage: string;
+  differentImageSrc: string;
+  differentImageFile: File;
+  otherProfileImages: string[];
+  _id: string;
 };
 
 export type WhiteBlobType = {
