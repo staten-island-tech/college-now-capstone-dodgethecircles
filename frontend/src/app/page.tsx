@@ -46,9 +46,6 @@ import { use, useEffect, useRef, useState } from "react";
 import { Enemy, clearScreen, isNearEdge } from "@/lib/utils";
 import Leaderboard from "@/components/custom/leaderboard";
 
-import { useAppSelector } from "@/lib/store";
-import { setAuthState } from "@/lib/authSlice";
-
 const loginFormSchema = z.object({
   username: z.string(),
   password: z.string(),
@@ -68,6 +65,9 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { argv0 } from "process";
 import { UserType, UserStateType } from "@/lib/interface";
 import { enemyUpdate } from "@/lib/utils";
+import type { RootState } from "../store/store";
+import { useSelector, useDispatch } from "react-redux";
+import { decrement, increment } from "./counterSlice";
 
 function Exists({ error, message }: { error: Error; message: string }) {
   if (error) {
@@ -81,7 +81,8 @@ const tags = Array.from({ length: 50 }).map(
 );
 
 export default function Home() {
-  const authState = useAppSelector((state) => state.auth.authState);
+  const count = useSelector((state: RootState) => state.counter.value);
+  const dispatch = useDispatch();
   const [userState, setUserState]: [UserStateType, Function] = useState({
     username: "",
     _id: "",
@@ -133,6 +134,12 @@ export default function Home() {
 
   // 2. Define a submit handler.
   async function onLogin(values: z.infer<typeof loginFormSchema>) {
+    try {
+      setopen(false);
+      loginForm.reset();
+    } catch (err: Error) {
+      setloginError(err.message);
+    }
     await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       mode: "cors", // no-cors, *cors, same-origin
